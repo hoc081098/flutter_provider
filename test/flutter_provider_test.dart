@@ -185,7 +185,111 @@ https://github.com/hoc081098/flutter_provider/issues/new
       expect(curr, equals(96));
       expect(buildCount, equals(2));
     });
+  });
 
+  group('Test Providers', () {
+    testWidgets('Providers with empty providers returns child', (tester) async {
+      await tester.pumpWidget(
+        Providers(
+          child: Text(
+            'Hello',
+            textDirection: TextDirection.ltr,
+          ),
+          providers: [],
+        ),
+      );
+
+      expect(find.text('Hello'), findsOneWidget);
+    });
+    testWidgets('MultiProvider children can only access parent providers',
+        (tester) async {
+      final k1 = GlobalKey();
+      final k2 = GlobalKey();
+      final k3 = GlobalKey();
+      final p1 = Provider(key: k1, value: 42);
+      final p2 = Provider(key: k2, value: 'foo');
+      final p3 = Provider(key: k3, value: 44.0);
+
+      final keyChild = GlobalKey();
+      await tester.pumpWidget(
+        Providers(
+          providers: [p1, p2, p3],
+          child: Text(
+            'Foo',
+            key: keyChild,
+            textDirection: TextDirection.ltr,
+          ),
+        ),
+      );
+
+      expect(find.text('Foo'), findsOneWidget);
+
+      // p1 cannot access to /p2/p3
+      expect(Provider.of<int>(k1.currentContext), 42);
+      expect(
+        () => Provider.of<String>(k1.currentContext),
+        throwsA(
+          const TypeMatcher<ProviderError>()
+              .having((err) => err.type, 'type', _typeOf<Provider<String>>())
+              .having((err) => err.toString(), 'toString()',
+                  '''Error: No Provider<String> found. To fix, please try:
+  * Wrapping your MaterialApp with the Provider<T>
+  * Providing full type information to Provider<T> and Provider.of<T> method
+If none of these solutions work, please file a bug at:
+https://github.com/hoc081098/flutter_provider/issues/new
+      '''),
+        ),
+      );
+      expect(
+        () => Provider.of<String>(k1.currentContext),
+        throwsA(
+          const TypeMatcher<ProviderError>()
+              .having((err) => err.type, 'type', _typeOf<Provider<String>>())
+              .having((err) => err.toString(), 'toString()',
+                  '''Error: No Provider<String> found. To fix, please try:
+  * Wrapping your MaterialApp with the Provider<T>
+  * Providing full type information to Provider<T> and Provider.of<T> method
+If none of these solutions work, please file a bug at:
+https://github.com/hoc081098/flutter_provider/issues/new
+      '''),
+        ),
+      );
+
+      // p2 can access only p1
+      expect(Provider.of<int>(k2.currentContext), 42);
+      expect(Provider.of<String>(k2.currentContext), 'foo');
+      expect(
+        () => Provider.of<double>(k2.currentContext),
+        throwsA(
+          const TypeMatcher<ProviderError>()
+              .having(
+            (err) => err.type,
+            'type',
+            _typeOf<Provider<double>>(),
+          )
+              .having((err) => err.toString(), 'toString()',
+                  '''Error: No Provider<double> found. To fix, please try:
+  * Wrapping your MaterialApp with the Provider<T>
+  * Providing full type information to Provider<T> and Provider.of<T> method
+If none of these solutions work, please file a bug at:
+https://github.com/hoc081098/flutter_provider/issues/new
+      '''),
+        ),
+      );
+
+      // p3 can access both p1 and p2
+      expect(Provider.of<int>(k3.currentContext), 42);
+      expect(Provider.of<String>(k3.currentContext), 'foo');
+      expect(Provider.of<double>(k3.currentContext), 44);
+
+      // the child can access them all
+      expect(Provider.of<int>(keyChild.currentContext), 42);
+      expect(Provider.of<String>(keyChild.currentContext), 'foo');
+      expect(Provider.of<double>(keyChild.currentContext), 44);
+    });
+  });
+
+  group('Test Consumer', () {
     testWidgets('Crashed with no builder', (tester) async {
       expect(
         () => Consumer<int>(builder: null),
@@ -193,7 +297,8 @@ https://github.com/hoc081098/flutter_provider/issues/new
       );
     });
 
-    testWidgets('Obtains value from Provider<T>', (tester) async {
+    testWidgets('Obtains value from Provider<T> using Consumer',
+        (tester) async {
       final key = GlobalKey();
 
       BuildContext ctx;
@@ -214,6 +319,77 @@ https://github.com/hoc081098/flutter_provider/issues/new
 
       expect(ctx, key.currentContext);
       expect(val, 99);
+    });
+
+    testWidgets('Crashed with no builder', (tester) async {
+      expect(
+        () => Consumer2<int, int>(builder: null),
+        throwsAssertionError,
+      );
+    });
+
+    testWidgets('Obtains value from Provider<T> using Consumer2',
+        (tester) async {
+      final key = GlobalKey();
+
+      BuildContext ctx;
+      int ii;
+      String ss;
+      await tester.pumpWidget(
+        Providers(
+          providers: [
+            Provider<int>(value: 2),
+            Provider<String>(value: 'Hello'),
+          ],
+          child: Consumer2<int, String>(
+            key: key,
+            builder: (context, i, s) {
+              ctx = context;
+              ii = i;
+              ss = s;
+              return Container();
+            },
+          ),
+        ),
+      );
+
+      expect(ctx, key.currentContext);
+      expect(ii, 2);
+      expect(ss, "Hello");
+    });
+
+    testWidgets('Obtains value from Provider<T> using Consumer3',
+        (tester) async {
+      final key = GlobalKey();
+
+      BuildContext ctx;
+      int ii;
+      String ss1;
+      String ss2;
+      await tester.pumpWidget(
+        Providers(
+          providers: [
+            Provider<int>(value: 2),
+            Provider<String>(value: 'Hello'),
+            Provider<String>(value: 'Hello2'),
+          ],
+          child: Consumer3<int, String, String>(
+            key: key,
+            builder: (context, i, s1, s2) {
+              ctx = context;
+              ii = i;
+              ss1 = s1;
+              ss2 = s2;
+              return Container();
+            },
+          ),
+        ),
+      );
+
+      expect(ctx, key.currentContext);
+      expect(ii, 2);
+      expect(ss1, "Hello2");
+      expect(ss2, "Hello2");
     });
   });
 }
