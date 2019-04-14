@@ -160,7 +160,7 @@ class Providers extends StatelessWidget {
 /// [builder] must not be null and may be called multiple times (such as when provided value change).
 class Consumer<T> extends StatelessWidget {
   /// Build a widget tree based on the value from a [Provider].
-  final Widget Function(BuildContext, T) builder;
+  final Widget Function(BuildContext context, T t) builder;
 
   const Consumer({
     Key key,
@@ -177,7 +177,7 @@ class Consumer<T> extends StatelessWidget {
 /// [builder] must not be null and may be called multiple times (such as when provided values change).
 class Consumer2<A, B> extends StatelessWidget {
   /// Build a widget tree based on the value from a [Provider].
-  final Widget Function(BuildContext, A, B) builder;
+  final Widget Function(BuildContext context, A a, B b) builder;
 
   const Consumer2({
     Key key,
@@ -194,7 +194,7 @@ class Consumer2<A, B> extends StatelessWidget {
 /// [builder] must not be null and may be called multiple times (such as when provided values change).
 class Consumer3<A, B, C> extends StatelessWidget {
   /// Build a widget tree based on the value from a [Provider].
-  final Widget Function(BuildContext, A, B, C) builder;
+  final Widget Function(BuildContext context, A a, B b, C c) builder;
 
   const Consumer3({
     Key key,
@@ -215,7 +215,7 @@ class Consumer3<A, B, C> extends StatelessWidget {
 /// [builder] must not be null and may be called multiple times (such as when provided values change).
 class Consumer4<A, B, C, D> extends StatelessWidget {
   /// Build a widget tree based on the value from a [Provider].
-  final Widget Function(BuildContext, A, B, C, D) builder;
+  final Widget Function(BuildContext context, A a, B b, C c, D d) builder;
 
   const Consumer4({
     Key key,
@@ -237,7 +237,7 @@ class Consumer4<A, B, C, D> extends StatelessWidget {
 /// [builder] must not be null and may be called multiple times (such as when provided values change).
 class Consumer5<A, B, C, D, E> extends StatelessWidget {
   /// Build a widget tree based on the value from a [Provider].
-  final Widget Function(BuildContext, A, B, C, D, E) builder;
+  final Widget Function(BuildContext context, A a, B b, C c, D d, E e) builder;
 
   const Consumer5({
     Key key,
@@ -260,7 +260,8 @@ class Consumer5<A, B, C, D, E> extends StatelessWidget {
 /// [builder] must not be null and may be called multiple times (such as when provided values change).
 class Consumer6<A, B, C, D, E, F> extends StatelessWidget {
   /// Build a widget tree based on the value from a [Provider].
-  final Widget Function(BuildContext, A, B, C, D, E, F) builder;
+  final Widget Function(BuildContext context, A a, B b, C c, D d, E e, F f)
+      builder;
 
   const Consumer6({
     Key key,
@@ -284,7 +285,8 @@ class Consumer6<A, B, C, D, E, F> extends StatelessWidget {
 /// [builder] must not be null and may be called multiple times (such as when provided values change).
 class Consumer7<A, B, C, D, E, F, G> extends StatelessWidget {
   /// Build a widget tree based on the value from a [Provider].
-  final Widget Function(BuildContext, A, B, C, D, E, F, G) builder;
+  final Widget Function(BuildContext context, A a, B b, C c, D d, E e, F f, G g)
+      builder;
 
   const Consumer7({
     Key key,
@@ -309,7 +311,8 @@ class Consumer7<A, B, C, D, E, F, G> extends StatelessWidget {
 /// [builder] must not be null and may be called multiple times (such as when provided values change).
 class Consumer8<A, B, C, D, E, F, G, H> extends StatelessWidget {
   /// Build a widget tree based on the value from a [Provider].
-  final Widget Function(BuildContext, A, B, C, D, E, F, G, H) builder;
+  final Widget Function(
+      BuildContext context, A a, B b, C c, D d, E e, F f, G g, H h) builder;
 
   const Consumer8({
     Key key,
@@ -335,7 +338,9 @@ class Consumer8<A, B, C, D, E, F, G, H> extends StatelessWidget {
 /// [builder] must not be null and may be called multiple times (such as when provided values change).
 class Consumer9<A, B, C, D, E, F, G, H, I> extends StatelessWidget {
   /// Build a widget tree based on the value from a [Provider].
-  final Widget Function(BuildContext, A, B, C, D, E, F, G, H, I) builder;
+  final Widget Function(
+          BuildContext context, A a, B b, C c, D d, E e, F f, G g, H h, I i)
+      builder;
 
   const Consumer9({
     Key key,
