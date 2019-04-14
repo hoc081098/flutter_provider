@@ -1,3 +1,7 @@
+## [1.1.0+2] - April 14, 2019
+
+- No change
+
 ## [1.1.0+1] - April 14, 2019
 
 - Refactor
