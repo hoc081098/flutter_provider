@@ -47,12 +47,13 @@ class Provider<T> extends InheritedWidget {
   /// }
   /// ```
   static T of<T>(BuildContext context, {bool listen = true}) {
-    final Type type = _typeOf<Provider<T>>();
     final Provider<T> provider = listen
-        ? context.inheritFromWidgetOfExactType(type)
-        : context.ancestorInheritedElementForWidgetOfExactType(type)?.widget;
+        ? context.dependOnInheritedWidgetOfExactType<Provider<T>>()
+        : context
+            .getElementForInheritedWidgetOfExactType<Provider<T>>()
+            ?.widget;
     if (provider == null) {
-      throw ProviderError(type);
+      throw ProviderError(_typeOf<Provider<T>>());
     }
     return provider.value;
   }

@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' hide TypeMatcher;
 import 'package:flutter_provider/flutter_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:test_api/test_api.dart' show TypeMatcher;
+import 'package:matcher/matcher.dart';
 
 Type _typeOf<T>() => T;
 
