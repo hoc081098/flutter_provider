@@ -2,15 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="18501cdc-95ad-44c1-848e-eb8b561156b4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/analysis_options.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/Flutter/flutter_export_environment.sh" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Flutter/flutter_export_environment.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/example/pubspec.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/flutter_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/flutter_provider.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/flutter_provider_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/flutter_provider_test.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -63,7 +56,7 @@
       <recent name="E:\Admin\Documents\Java\flutter_provider\example\lib" />
     </key>
   </component>
-  <component name="RunManager" selected="Flutter Test.tests in flutter_provider_test.dart">
+  <component name="RunManager" selected="Flutter Test.disposer called">
     <configuration name="main.dart" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
@@ -78,8 +71,8 @@
       <option name="testFile" value="$PROJECT_DIR$/test/flutter_provider_test.dart" />
       <method v="2" />
     </configuration>
-    <configuration name="Test provider" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
-      <option name="testName" value="Test provider" />
+    <configuration name="disposer called" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testName" value="disposer called" />
       <option name="testFile" value="$PROJECT_DIR$/test/flutter_provider_test.dart" />
       <method v="2" />
     </configuration>
@@ -94,11 +87,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Flutter Test.disposer called" />
         <item itemvalue="Flutter Test.tests in flutter_provider_test.dart" />
         <item itemvalue="Flutter Test.extension method" />
         <item itemvalue="Flutter Test.Providers children can only access parent providers" />
         <item itemvalue="Flutter Test.Test Providers" />
-        <item itemvalue="Flutter Test.Test provider" />
       </list>
     </recent_temporary>
   </component>
@@ -128,7 +121,14 @@
       <option name="project" value="LOCAL" />
       <updated>1554637392499</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary=":recycle: dev">
+      <created>1602552941100</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1602552941100</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -148,32 +148,41 @@
     <option name="CHECK_NEW_TODO" value="false" />
     <MESSAGE value="Publish version 1.1.0" />
     <MESSAGE value="Remove generated files" />
-    <option name="LAST_COMMIT_MESSAGE" value="Remove generated files" />
+    <MESSAGE value=":recycle: dev" />
+    <option name="LAST_COMMIT_MESSAGE" value=":recycle: dev" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="604" y="-974" key="CommitChangelistDialog2" timestamp="1602552939799">
+      <screen x="0" y="-1080" width="1920" height="1040" />
+    </state>
+    <state x="604" y="-974" key="CommitChangelistDialog2/0.0.1366.728/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1602552939799" />
     <state x="92" y="92" width="1182" height="544" key="DiffContextDialog" timestamp="1602514408146">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="92" y="92" width="1182" height="544" key="DiffContextDialog/0.0.1366.728@0.0.1366.728" timestamp="1602514408146" />
-    <state width="1877" height="651" key="GridCell.Tab.0.bottom" timestamp="1602552897703">
+    <state width="1877" height="431" key="GridCell.Tab.0.bottom" timestamp="1602553343442">
       <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
-    <state width="1877" height="651" key="GridCell.Tab.0.bottom/0.0.1366.728/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1602552897703" />
+    <state width="1877" height="431" key="GridCell.Tab.0.bottom/0.0.1366.728/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1602553343442" />
     <state width="1323" height="105" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1602514408129" />
-    <state width="1877" height="651" key="GridCell.Tab.0.center" timestamp="1602552897703">
+    <state width="1877" height="431" key="GridCell.Tab.0.center" timestamp="1602553343442">
       <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
-    <state width="1877" height="651" key="GridCell.Tab.0.center/0.0.1366.728/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1602552897703" />
+    <state width="1877" height="431" key="GridCell.Tab.0.center/0.0.1366.728/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1602553343442" />
     <state width="1323" height="105" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1602514408129" />
-    <state width="1877" height="651" key="GridCell.Tab.0.left" timestamp="1602552897703">
+    <state width="1877" height="431" key="GridCell.Tab.0.left" timestamp="1602553343442">
       <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
-    <state width="1877" height="651" key="GridCell.Tab.0.left/0.0.1366.728/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1602552897703" />
+    <state width="1877" height="431" key="GridCell.Tab.0.left/0.0.1366.728/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1602553343442" />
     <state width="1323" height="105" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1602514408129" />
-    <state width="1877" height="651" key="GridCell.Tab.0.right" timestamp="1602552897703">
+    <state width="1877" height="431" key="GridCell.Tab.0.right" timestamp="1602553343442">
       <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
-    <state width="1877" height="651" key="GridCell.Tab.0.right/0.0.1366.728/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1602552897703" />
+    <state width="1877" height="431" key="GridCell.Tab.0.right/0.0.1366.728/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1602553343442" />
     <state width="1323" height="105" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1602514408129" />
+    <state x="552" y="-841" key="Vcs.Push.Dialog.v2" timestamp="1602552941920">
+      <screen x="0" y="-1080" width="1920" height="1040" />
+    </state>
+    <state x="552" y="-841" key="Vcs.Push.Dialog.v2/0.0.1366.728/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1602552941920" />
   </component>
 </project>

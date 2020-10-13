@@ -31,6 +31,7 @@ class Provider<T> extends StatefulWidget {
   factory Provider.value(
     T value, {
     Key key,
+    void Function(T) disposer,
     bool Function(T previous, T current) updateShouldNotify,
     Widget child,
   }) {
@@ -38,6 +39,7 @@ class Provider<T> extends StatefulWidget {
     return Provider.factory(
       key: key,
       factory: (_) => value,
+      disposer: disposer,
       updateShouldNotify: updateShouldNotify,
       child: child,
     );

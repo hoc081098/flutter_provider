@@ -165,6 +165,31 @@ void main() {
 
       expect(value, 'Hello');
     });
+
+    testWidgets('disposer called', (tester) async {
+      String value;
+
+      await tester.pumpWidget(
+        Provider<String>.value(
+          'Hello',
+          disposer: expectAsync1(
+            (v) {
+              expect(value, 'Hello');
+              expect(v, 'Hello');
+            },
+            count: 1,
+          ),
+          child: Builder(
+            builder: (context) {
+              value = context.value(false);
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
+
+      await tester.pumpWidget(const SizedBox());
+    });
   });
 
   group(
