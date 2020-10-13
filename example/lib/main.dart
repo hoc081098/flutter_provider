@@ -27,11 +27,11 @@ void main() {
   runApp(
     Providers(
       providers: <Provider>[
-        const Provider<Bar1>(value: bar1),
-        const Provider<Bar2>(value: bar2),
+        Provider<Bar1>.value(bar1),
+        Provider<Bar2>.value(bar2),
       ],
-      child: const Provider<Foo>(
-        value: foo,
+      child: Provider<Foo>.value(
+        foo,
         child: MyApp(),
       ),
     ),

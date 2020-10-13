@@ -3,27 +3,45 @@ import 'package:flutter/material.dart';
 
 /// Provides a [value] to all descendants of this Widget. This should
 /// generally be a root widget in your App
-class Provider<T> extends InheritedWidget {
-  /// The value exposed to other widgets.
-  ///
-  /// You can obtain this value this widget's descendants
-  /// using [Provider.of] method
-  final T value;
-
-  /// A callback called whenever [InheritedWidget.updateShouldNotify] is called.
-  /// It should return `false` when there's no need to update its dependents.
-  ///
-  /// Default value of [_updateShouldNotify] is [_notEquals]
+class Provider<T> extends StatefulWidget {
+  final T Function(BuildContext) _factory;
+  final void Function(T) _disposer;
   final bool Function(T, T) _updateShouldNotify;
+  final Widget _child;
 
-  const Provider({
+  /// [updateShouldNotify] is a callback called whenever [InheritedWidget.updateShouldNotify] is called.
+  /// It should return `false` when there's no need to update its dependents.
+  /// Default value of [updateShouldNotify] is returning true if old value is not equal to current value.
+  const Provider.factory({
     Key key,
+    @required T Function(BuildContext) factory,
+    void Function(T) disposer,
+    bool Function(T previous, T current) updateShouldNotify,
     Widget child,
-    @required this.value,
-    bool updateShouldNotify(T previous, T current),
-  })  : assert(value != null),
+  })  : assert(factory != null),
+        _factory = factory,
+        _disposer = disposer,
         _updateShouldNotify = updateShouldNotify ?? _notEquals,
-        super(key: key, child: child);
+        _child = child,
+        super(key: key);
+
+  /// [updateShouldNotify] is a callback called whenever [InheritedWidget.updateShouldNotify] is called.
+  /// It should return `false` when there's no need to update its dependents.
+  /// Default value of [updateShouldNotify] is returning true if old value is not equal to current value.
+  factory Provider.value(
+    T value, {
+    Key key,
+    bool Function(T previous, T current) updateShouldNotify,
+    Widget child,
+  }) {
+    assert(value != null);
+    return Provider.factory(
+      key: key,
+      factory: (_) => value,
+      updateShouldNotify: updateShouldNotify,
+      child: child,
+    );
+  }
 
   /// A method that can be called by descendant Widgets to retrieve the [value]
   /// from the [Provider].
@@ -47,36 +65,105 @@ class Provider<T> extends InheritedWidget {
   /// }
   /// ```
   static T of<T>(BuildContext context, {bool listen = true}) {
-    final Provider<T> provider = listen
-        ? context.dependOnInheritedWidgetOfExactType<Provider<T>>()
-        : context
-            .getElementForInheritedWidgetOfExactType<Provider<T>>()
-            ?.widget;
-    if (provider == null) {
-      throw ProviderError(_typeOf<Provider<T>>());
+    if (T == dynamic) {
+      throw ProviderError();
     }
-    return provider.value;
+
+    final inheritedWidget = listen
+        ? context.dependOnInheritedWidgetOfExactType<_ProviderInherited<T>>()
+        : (context
+            .getElementForInheritedWidgetOfExactType<_ProviderInherited<T>>()
+            ?.widget as _ProviderInherited<T>);
+
+    if (inheritedWidget == null) {
+      throw ProviderError(T);
+    }
+
+    return inheritedWidget.value;
   }
 
   @override
-  bool updateShouldNotify(Provider<T> old) =>
-      _updateShouldNotify(old.value, value);
+  _ProviderState<T> createState() => _ProviderState<T>();
+
+  Provider<T> _copyWithChild(Widget child) => Provider<T>.factory(
+        child: child,
+        factory: _factory,
+        key: key,
+        updateShouldNotify: _updateShouldNotify,
+      );
+}
+
+extension ProviderExtension on BuildContext {
+  T value<T>([bool listen = true]) => Provider.of<T>(this, listen: listen);
+}
+
+bool _notEquals<T>(T previous, T current) => previous != current;
+
+class _ProviderState<T> extends State<Provider<T>> {
+  T value;
+
+  @override
+  void initState() {
+    super.initState();
+    initValue();
+  }
+
+  @override
+  void didUpdateWidget(Provider<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget._factory != widget._factory) {
+      disposeValue();
+      initValue();
+    }
+  }
+
+  @override
+  void dispose() {
+    disposeValue();
+    super.dispose();
+  }
+
+  void initValue() {
+    value = widget._factory(context);
+    assert(value != null);
+  }
+
+  void disposeValue() {
+    assert(value != null);
+    widget._disposer?.call(value);
+    value = null;
+  }
+
+  @override
+  Widget build(BuildContext context) => _ProviderInherited(
+        value: value,
+        updateShouldNotifyDelegate: widget._updateShouldNotify,
+        child: widget._child,
+      );
+}
+
+class _ProviderInherited<T> extends InheritedWidget {
+  final T value;
+  final bool Function(T, T) updateShouldNotifyDelegate;
+
+  _ProviderInherited({
+    Key key,
+    @required this.value,
+    @required this.updateShouldNotifyDelegate,
+    @required Widget child,
+  })  : assert(value != null),
+        assert(updateShouldNotifyDelegate != null),
+        super(key: key, child: child);
+
+  @override
+  bool updateShouldNotify(_ProviderInherited<T> oldWidget) =>
+      updateShouldNotifyDelegate(oldWidget.value, value);
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty('value', value));
+    properties.add(DiagnosticsProperty<T>('value', value));
   }
-
-  static bool _notEquals(previous, current) => previous != current;
-
-  static Type _typeOf<T>() => T;
-
-  Provider<T> copyWithChild(Widget child) => Provider<T>(
-      child: child,
-      value: value,
-      key: key,
-      updateShouldNotify: _updateShouldNotify);
 }
 
 /// If the [Provider.of] method fails, this error will be thrown.
@@ -89,13 +176,17 @@ class ProviderError extends Error {
   final Type type;
 
   /// Creates a [ProviderError]
-  ProviderError(this.type);
+  ProviderError([this.type]);
 
   @override
   String toString() {
-    return '''Error: No $type found. To fix, please try:
-  * Wrapping your MaterialApp with the Provider<T>
-  * Providing full type information to Provider<T> and Provider.of<T> method
+    if (type == null) {
+      return '''Error: please specify type instead of using dynamic when calling Provider.of<T>() or context.value<T>() method.''';
+    }
+
+    return '''Error: No Provider<$type> found. To fix, please try:
+  * Wrapping your MaterialApp with the Provider<$type>
+  * Providing full type information to Provider<$type>, Provider.of<$type> and context.value<$type>() method
 If none of these solutions work, please file a bug at:
 https://github.com/hoc081098/flutter_provider/issues/new
       ''';
@@ -153,8 +244,8 @@ class Providers extends StatelessWidget {
         super(key: key);
 
   @override
-  Widget build(BuildContext context) => providers.reversed
-      .fold(child, (Widget acc, Provider<dynamic> e) => e.copyWithChild(acc));
+  Widget build(BuildContext context) =>
+      providers.reversed.fold(child, (acc, e) => e._copyWithChild(acc));
 }
 
 /// Obtain [Provider] from its ancestors and pass its value to [builder].

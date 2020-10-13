@@ -1,17 +1,18 @@
 name: flutter_provider
 description: Flutter generic provider using InheritedWidget. An helper to easily exposes a value using InheritedWidget without having to write one.
-version: 1.1.1
+version: 1.2.0
 homepage: https://github.com/hoc081098/flutter_provider
 
 environment:
-  sdk: ">=2.6.0 <3.0.0"
+  sdk: '>=2.7.0 <3.0.0'
 
 dependencies:
-  meta: ">=1.1.1 <2.0.0"
+  meta: ^1.1.8
   flutter:
     sdk: flutter
 
 dev_dependencies:
+  pedantic: ^1.9.0
   matcher: ^0.12.6
   flutter_test:
     sdk: flutter
