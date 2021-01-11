@@ -1,21 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="18501cdc-95ad-44c1-848e-eb8b561156b4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages2.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/src/consumer.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/example/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/example/pubspec.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/flutter_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/flutter_provider.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/flutter_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/flutter_provider.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/flutter_provider_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/flutter_provider_test.dart" afterDir="false" />
-    </list>
+    <list default="true" id="18501cdc-95ad-44c1-848e-eb8b561156b4" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -148,7 +134,14 @@
       <option name="project" value="LOCAL" />
       <updated>1602552941100</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="nnbd">
+      <created>1610353972051</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1610353972051</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -169,7 +162,8 @@
     <MESSAGE value="Publish version 1.1.0" />
     <MESSAGE value="Remove generated files" />
     <MESSAGE value=":recycle: dev" />
-    <option name="LAST_COMMIT_MESSAGE" value=":recycle: dev" />
+    <MESSAGE value="nnbd" />
+    <option name="LAST_COMMIT_MESSAGE" value="nnbd" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
