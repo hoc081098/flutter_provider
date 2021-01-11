@@ -22,7 +22,8 @@ class Provider<T extends Object> extends StatefulWidget {
     void Function(T)? disposer,
     bool Function(T previous, T current)? updateShouldNotify,
     Widget? child,
-  })  : assert(factory != null),
+  })
+      : assert(factory != null),
         _factory = factory,
         _value = null,
         _disposer = disposer,
@@ -33,13 +34,13 @@ class Provider<T extends Object> extends StatefulWidget {
   /// [updateShouldNotify] is a callback called whenever [InheritedWidget.updateShouldNotify] is called.
   /// It should return `false` when there's no need to update its dependents.
   /// Default value of [updateShouldNotify] is returning true if old value is not equal to current value.
-  const Provider.value(
-    T value, {
+  const Provider.value(T value, {
     Key? key,
     void Function(T)? disposer,
     bool Function(T previous, T current)? updateShouldNotify,
     Widget? child,
-  })  : assert(value != null),
+  })
+      : assert(value != null),
         _factory = null,
         _value = value,
         _disposer = disposer,
@@ -76,8 +77,8 @@ class Provider<T extends Object> extends StatefulWidget {
     final scope = listen
         ? context.dependOnInheritedWidgetOfExactType<_ProviderScope<T>>()
         : (context
-            .getElementForInheritedWidgetOfExactType<_ProviderScope<T>>()
-            ?.widget as _ProviderScope<T>?);
+        .getElementForInheritedWidgetOfExactType<_ProviderScope<T>>()
+        ?.widget as _ProviderScope<T>?);
 
     if (scope == null) {
       throw ProviderError(T);
@@ -100,6 +101,7 @@ class Provider<T extends Object> extends StatefulWidget {
         child: child,
         key: key,
         updateShouldNotify: _updateShouldNotify,
+        disposer: _disposer,
       );
     } else {
       return Provider<T>.factory(
@@ -107,6 +109,7 @@ class Provider<T extends Object> extends StatefulWidget {
         factory: _factory!,
         key: key,
         updateShouldNotify: _updateShouldNotify,
+        disposer: _disposer,
       );
     }
   }
@@ -209,7 +212,8 @@ class _ProviderScope<T> extends InheritedWidget {
     required this.value,
     required this.updateShouldNotifyDelegate,
     required Widget child,
-  })   : assert(value != null),
+  })
+      : assert(value != null),
         assert(updateShouldNotifyDelegate != null),
         super(key: key, child: child);
 
@@ -300,10 +304,11 @@ class Providers extends StatelessWidget {
     Key? key,
     required List<Provider<dynamic>> providers,
     required Widget child,
-  })   : assert(providers != null),
+  })
+      : assert(providers != null),
         assert(child != null),
         _child =
-            providers.reversed.fold(child, (acc, e) => e._copyWithChild(acc)),
+        providers.reversed.fold(child, (acc, e) => e._copyWithChild(acc)),
         super(key: key);
 
   @override
