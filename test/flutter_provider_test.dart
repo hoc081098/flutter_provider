@@ -7,14 +7,14 @@ void main() {
   group('Test provider', () {
     testWidgets('simple usage', (tester) async {
       var buildCount = 0;
-      int value;
-      String s;
+      late int value;
+      late String s;
 
       final builder = Builder(
         builder: (context) {
           buildCount++;
-          value = Provider.of<int>(context);
-          s = Provider.of<String>(context, listen: false);
+          value = Provider.of<int>(context, listen: true);
+          s = Provider.of<String>(context);
           return Container();
         },
       );
@@ -89,8 +89,8 @@ void main() {
     });
 
     testWidgets('update should notify', (tester) async {
-      int old;
-      int curr;
+      late int old;
+      late int curr;
       var callCount = 0;
       final updateShouldNotify = (int o, int c) {
         callCount++;
@@ -100,10 +100,10 @@ void main() {
       };
 
       var buildCount = 0;
-      int buildValue;
+      late int buildValue;
       final builder = Builder(
         builder: (BuildContext context) {
-          buildValue = Provider.of<int>(context);
+          buildValue = Provider.of<int>(context, listen: true);
           buildCount++;
           return Container();
         },
@@ -149,14 +149,14 @@ void main() {
     });
 
     testWidgets('extension method', (tester) async {
-      String value;
+      late String value;
 
       await tester.pumpWidget(
         Provider<String>.value(
           'Hello',
           child: Builder(
             builder: (context) {
-              value = context.value<String>();
+              value = context.get<String>();
               return const SizedBox();
             },
           ),
@@ -167,7 +167,7 @@ void main() {
     });
 
     testWidgets('disposer called', (tester) async {
-      String value;
+      late String value;
 
       await tester.pumpWidget(
         Provider<String>.value(
@@ -181,7 +181,7 @@ void main() {
           ),
           child: Builder(
             builder: (context) {
-              value = context.value(false);
+              value = context.get();
               return const SizedBox();
             },
           ),
@@ -234,7 +234,7 @@ void main() {
         expect(find.text('Foo'), findsOneWidget);
 
         expect(
-          () => Provider.of<int>(k1.currentContext),
+          () => Provider.of<int>(k1.currentContext!),
           throwsA(
             const TypeMatcher<ProviderError>().having(
               (err) => err.type,
@@ -244,7 +244,7 @@ void main() {
           ),
         );
         expect(
-          () => Provider.of<String>(k1.currentContext),
+          () => Provider.of<String>(k1.currentContext!),
           throwsA(
             const TypeMatcher<ProviderError>().having(
               (err) => err.type,
@@ -254,7 +254,7 @@ void main() {
           ),
         );
         expect(
-          () => Provider.of<double>(k1.currentContext),
+          () => Provider.of<double>(k1.currentContext!),
           throwsA(
             const TypeMatcher<ProviderError>().having(
               (err) => err.type,
@@ -264,9 +264,9 @@ void main() {
           ),
         );
 
-        expect(Provider.of<int>(k2.currentContext), 42);
+        expect(Provider.of<int>(k2.currentContext!), 42);
         expect(
-          () => Provider.of<String>(k2.currentContext),
+          () => Provider.of<String>(k2.currentContext!),
           throwsA(
             const TypeMatcher<ProviderError>().having(
               (err) => err.type,
@@ -276,7 +276,7 @@ void main() {
           ),
         );
         expect(
-          () => Provider.of<double>(k2.currentContext),
+          () => Provider.of<double>(k2.currentContext!),
           throwsA(
             const TypeMatcher<ProviderError>().having(
               (err) => err.type,
@@ -286,10 +286,10 @@ void main() {
           ),
         );
 
-        expect(Provider.of<int>(k3.currentContext), 42);
-        expect(Provider.of<String>(k3.currentContext), 'foo');
+        expect(Provider.of<int>(k3.currentContext!), 42);
+        expect(Provider.of<String>(k3.currentContext!), 'foo');
         expect(
-          () => Provider.of<double>(k3.currentContext),
+          () => Provider.of<double>(k3.currentContext!),
           throwsA(
             const TypeMatcher<ProviderError>().having(
               (err) => err.type,
@@ -299,27 +299,20 @@ void main() {
           ),
         );
 
-        expect(Provider.of<int>(keyChild.currentContext), 42);
-        expect(Provider.of<String>(keyChild.currentContext), 'foo');
-        expect(Provider.of<double>(keyChild.currentContext), 44);
+        expect(Provider.of<int>(keyChild.currentContext!), 42);
+        expect(Provider.of<String>(keyChild.currentContext!), 'foo');
+        expect(Provider.of<double>(keyChild.currentContext!), 44);
       });
     },
   );
 
   group('Test Consumer', () {
-    testWidgets('Assert null builder', (tester) async {
-      expect(
-        () => Consumer<int>(builder: null),
-        throwsAssertionError,
-      );
-    });
-
     testWidgets('Obtains value from Provider<T> using Consumer',
         (tester) async {
       final key = GlobalKey();
 
-      BuildContext ctx;
-      int val;
+      late BuildContext ctx;
+      late int val;
       await tester.pumpWidget(
         Provider<int>.value(
           99,
@@ -338,20 +331,13 @@ void main() {
       expect(val, 99);
     });
 
-    testWidgets('Crashed with no builder', (tester) async {
-      expect(
-        () => Consumer2<int, int>(builder: null),
-        throwsAssertionError,
-      );
-    });
-
     testWidgets('Obtains value from Provider<T> using Consumer2',
         (tester) async {
       final key = GlobalKey();
 
-      BuildContext ctx;
-      int ii;
-      String ss;
+      late BuildContext ctx;
+      late int ii;
+      late String ss;
       await tester.pumpWidget(
         Providers(
           providers: [
@@ -379,10 +365,10 @@ void main() {
         (tester) async {
       final key = GlobalKey();
 
-      BuildContext ctx;
-      int ii;
-      String ss1;
-      String ss2;
+      late BuildContext ctx;
+      late int ii;
+      late String ss1;
+      late String ss2;
       await tester.pumpWidget(
         Providers(
           providers: [
