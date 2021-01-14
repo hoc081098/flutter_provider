@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="18501cdc-95ad-44c1-848e-eb8b561156b4" name="Default Changelist" comment="" />
+    <list default="true" id="18501cdc-95ad-44c1-848e-eb8b561156b4" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -51,7 +54,7 @@
     <property name="dart.analysis.tool.window.force.activate" value="false" />
     <property name="dart.analysis.tool.window.visible" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+    <property name="settings.editor.selected.configurable" value="flutter.settings" />
     <property name="show.migrate.to.gradle.popup" value="false" />
   </component>
   <component name="RecentsManager">
@@ -164,6 +167,12 @@
     <MESSAGE value=":recycle: dev" />
     <MESSAGE value="nnbd" />
     <option name="LAST_COMMIT_MESSAGE" value="nnbd" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="184" y="8" key="SettingsEditor" timestamp="1610648444228">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="184" y="8" key="SettingsEditor/0.0.1366.728@0.0.1366.728" timestamp="1610648444228" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
