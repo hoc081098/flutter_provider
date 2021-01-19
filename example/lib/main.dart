@@ -60,7 +60,6 @@ class WelcomePage extends StatelessWidget {
                 builder: (context) {
                   final foo = Foo();
                   final bar1 = Bar1();
-                  final bar2 = Bar2();
 
                   return Providers(
                     providers: [
@@ -68,8 +67,8 @@ class WelcomePage extends StatelessWidget {
                         bar1,
                         disposer: (v) => v.dispose(),
                       ),
-                      Provider<Bar2>.value(
-                        bar2,
+                      Provider<Bar2>.factory(
+                        (context) => Bar2(),
                         disposer: (v) => v.dispose(),
                       ),
                     ],

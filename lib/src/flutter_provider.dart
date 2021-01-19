@@ -16,9 +16,9 @@ class Provider<T extends Object> extends StatefulWidget {
   /// [updateShouldNotify] is a callback called whenever [InheritedWidget.updateShouldNotify] is called.
   /// It should return `false` when there's no need to update its dependents.
   /// Default value of [updateShouldNotify] is returning true if old value is not equal to current value.
-  const Provider.factory({
+  const Provider.factory(
+    T Function(BuildContext) factory, {
     Key? key,
-    required T Function(BuildContext) factory,
     void Function(T)? disposer,
     bool Function(T previous, T current)? updateShouldNotify,
     Widget? child,
@@ -103,9 +103,10 @@ class Provider<T extends Object> extends StatefulWidget {
         disposer: _disposer,
       );
     } else {
+      assert(_factory != null);
       return Provider<T>.factory(
+        _factory!,
         child: child,
-        factory: _factory!,
         key: key,
         updateShouldNotify: _updateShouldNotify,
         disposer: _disposer,
