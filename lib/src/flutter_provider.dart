@@ -83,7 +83,7 @@ class Provider<T extends Object> extends StatefulWidget {
       throw ProviderError(T);
     }
 
-    return scope.value;
+    return scope.getValue();
   }
 
   @override
@@ -131,7 +131,6 @@ class _FactoryProviderState<T extends Object> extends State<Provider<T>> {
   @override
   void initState() {
     super.initState();
-    initValue();
   }
 
   @override
@@ -141,20 +140,26 @@ class _FactoryProviderState<T extends Object> extends State<Provider<T>> {
   }
 
   void initValue() {
-    value = widget._factory!(context);
-    assert(value != null);
+    if (value == null) {
+      value = widget._factory!(context);
+      assert(value != null);
+    }
   }
 
   void disposeValue() {
-    assert(value != null);
-    widget._disposer?.call(value!);
-    value = null;
+    if (value != null) {
+      widget._disposer?.call(value!);
+      value = null;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return _ProviderScope<T>(
-      value: value!,
+      getValue: () {
+        initValue();
+        return value!;
+      },
       updateShouldNotifyDelegate: widget._updateShouldNotify,
       child: widget._child!,
     );
@@ -200,7 +205,7 @@ class _ValueProviderState<T extends Object> extends State<Provider<T>> {
   @override
   Widget build(BuildContext context) {
     return _ProviderScope<T>(
-      value: value!,
+      getValue: () => value!,
       updateShouldNotifyDelegate: widget._updateShouldNotify,
       child: widget._child!,
     );
@@ -208,26 +213,26 @@ class _ValueProviderState<T extends Object> extends State<Provider<T>> {
 }
 
 class _ProviderScope<T> extends InheritedWidget {
-  final T value;
+  final T Function() getValue;
   final bool Function(T, T) updateShouldNotifyDelegate;
 
   _ProviderScope({
     Key? key,
-    required this.value,
+    required this.getValue,
     required this.updateShouldNotifyDelegate,
     required Widget child,
-  })   : assert(value != null),
+  })   : assert(getValue != null),
         assert(updateShouldNotifyDelegate != null),
         super(key: key, child: child);
 
   @override
   bool updateShouldNotify(_ProviderScope<T> oldWidget) =>
-      updateShouldNotifyDelegate(oldWidget.value, value);
+      updateShouldNotifyDelegate(oldWidget.getValue(), getValue());
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<T>('value', value));
+    properties.add(DiagnosticsProperty<T>('getValue', getValue()));
   }
 }
 
