@@ -1,3 +1,5 @@
+// @dart=2.9
+
 import 'dart:collection';
 
 import 'package:flutter/widgets.dart' hide TypeMatcher;
@@ -5,12 +7,16 @@ import 'package:flutter_provider/flutter_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:matcher/matcher.dart';
 
+import 'assert_tests.dart' as assert_tests;
+
 void main() {
+  assert_tests.main();
+
   group('Test provider', () {
     testWidgets('simple usage', (tester) async {
       var buildCount = 0;
-      late int value;
-      late String s;
+      int value;
+      String s;
 
       final builder = Builder(
         builder: (context) {
@@ -91,8 +97,8 @@ void main() {
     });
 
     testWidgets('update should notify', (tester) async {
-      late int old;
-      late int curr;
+      int old;
+      int curr;
       var callCount = 0;
       final updateShouldNotify = (int o, int c) {
         callCount++;
@@ -102,7 +108,7 @@ void main() {
       };
 
       var buildCount = 0;
-      late int buildValue;
+      int buildValue;
       final builder = Builder(
         builder: (BuildContext context) {
           buildValue = Provider.of<int>(context, listen: true);
@@ -153,7 +159,7 @@ void main() {
     testWidgets('update should notify has no effect if using Provider.factory',
         (tester) async {
       var buildCount = 0;
-      late int buildValue;
+      int buildValue;
       final builder = Builder(
         builder: (BuildContext context) {
           buildValue = Provider.of<int>(context, listen: true);
@@ -196,7 +202,7 @@ void main() {
     });
 
     testWidgets('extension method', (tester) async {
-      late String value;
+      String value;
 
       await tester.pumpWidget(
         Provider<String>.value(
@@ -215,7 +221,7 @@ void main() {
 
     testWidgets('disposer called', (tester) async {
       {
-        late String value;
+        String value;
 
         await tester.pumpWidget(
           Provider<String>.value(
@@ -240,7 +246,7 @@ void main() {
       }
 
       {
-        late String value;
+        String value;
 
         await tester.pumpWidget(
           Provider<String>.factory(
@@ -307,7 +313,7 @@ void main() {
       await tester.pump(const Duration(seconds: 2));
 
       expect(call, 0);
-      expect(key.currentContext!.get<String>(), 'Hello');
+      expect(key.currentContext.get<String>(), 'Hello');
       expect(call, 1);
 
       await tester.pumpWidget(const SizedBox());
@@ -346,7 +352,7 @@ void main() {
               '_ProviderScope<String>(value: <not yet created>, type: String)'),
         );
 
-        expect(key.currentContext!.get<String>(), 'Hello');
+        expect(key.currentContext.get<String>(), 'Hello');
 
         expect(call, 1);
         expect(
@@ -378,7 +384,7 @@ void main() {
           contains('_ProviderScope<String>(value: Hello, type: String)'),
         );
 
-        expect(key.currentContext!.get<String>(), 'Hello');
+        expect(key.currentContext.get<String>(), 'Hello');
 
         expect(
           tester.allElements.map((e) => e.toString()),
@@ -444,19 +450,6 @@ void main() {
   });
 
   group('Test Providers', () {
-    testWidgets('Providers with empty providers returns child', (tester) async {
-      await tester.pumpWidget(
-        Providers(
-          child: Text(
-            'Hello',
-            textDirection: TextDirection.ltr,
-          ),
-          providers: [],
-        ),
-      );
-
-      expect(find.text('Hello'), findsOneWidget);
-    });
     testWidgets('Providers children can only access parent providers',
         (tester) async {
       final k = GlobalKey();
@@ -514,7 +507,7 @@ void main() {
       );
 
       expect(
-        () => Provider.of<int>(k1.currentContext!),
+        () => Provider.of<int>(k1.currentContext),
         throwsA(
           const TypeMatcher<ProviderError>().having(
             (err) => err.type,
@@ -524,7 +517,7 @@ void main() {
         ),
       );
       expect(
-        () => Provider.of<String>(k1.currentContext!),
+        () => Provider.of<String>(k1.currentContext),
         throwsA(
           const TypeMatcher<ProviderError>().having(
             (err) => err.type,
@@ -534,7 +527,7 @@ void main() {
         ),
       );
       expect(
-        () => Provider.of<double>(k1.currentContext!),
+        () => Provider.of<double>(k1.currentContext),
         throwsA(
           const TypeMatcher<ProviderError>().having(
             (err) => err.type,
@@ -544,9 +537,9 @@ void main() {
         ),
       );
 
-      expect(Provider.of<int>(k2.currentContext!), 42);
+      expect(Provider.of<int>(k2.currentContext), 42);
       expect(
-        () => Provider.of<String>(k2.currentContext!),
+        () => Provider.of<String>(k2.currentContext),
         throwsA(
           const TypeMatcher<ProviderError>().having(
             (err) => err.type,
@@ -556,7 +549,7 @@ void main() {
         ),
       );
       expect(
-        () => Provider.of<double>(k2.currentContext!),
+        () => Provider.of<double>(k2.currentContext),
         throwsA(
           const TypeMatcher<ProviderError>().having(
             (err) => err.type,
@@ -566,10 +559,10 @@ void main() {
         ),
       );
 
-      expect(Provider.of<int>(k3.currentContext!), 42);
-      expect(Provider.of<String>(k3.currentContext!), 'foo');
+      expect(Provider.of<int>(k3.currentContext), 42);
+      expect(Provider.of<String>(k3.currentContext), 'foo');
       expect(
-        () => Provider.of<double>(k3.currentContext!),
+        () => Provider.of<double>(k3.currentContext),
         throwsA(
           const TypeMatcher<ProviderError>().having(
             (err) => err.type,
@@ -579,9 +572,9 @@ void main() {
         ),
       );
 
-      expect(Provider.of<int>(keyChild.currentContext!), 42);
-      expect(Provider.of<String>(keyChild.currentContext!), 'foo');
-      expect(Provider.of<double>(keyChild.currentContext!), 44);
+      expect(Provider.of<int>(keyChild.currentContext), 42);
+      expect(Provider.of<String>(keyChild.currentContext), 'foo');
+      expect(Provider.of<double>(keyChild.currentContext), 44);
     });
   });
 
@@ -590,8 +583,8 @@ void main() {
         (tester) async {
       final key = GlobalKey();
 
-      late BuildContext ctx;
-      late int val;
+      BuildContext ctx;
+      int val;
       await tester.pumpWidget(
         Provider<int>.value(
           99,
@@ -614,9 +607,9 @@ void main() {
         (tester) async {
       final key = GlobalKey();
 
-      late BuildContext ctx;
-      late int ii;
-      late String ss;
+      BuildContext ctx;
+      int ii;
+      String ss;
       await tester.pumpWidget(
         Providers(
           providers: [
@@ -644,10 +637,10 @@ void main() {
         (tester) async {
       final key = GlobalKey();
 
-      late BuildContext ctx;
-      late int ii;
-      late String ss1;
-      late String ss2;
+      BuildContext ctx;
+      int ii;
+      String ss1;
+      String ss2;
       await tester.pumpWidget(
         Providers(
           providers: [

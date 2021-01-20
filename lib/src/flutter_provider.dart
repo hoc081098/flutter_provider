@@ -96,7 +96,7 @@ abstract class Provider<T extends Object> extends StatefulWidget {
 }
 
 /// Retrieve the value from the [Provider] by this [BuildContext].
-extension ProviderExtension on BuildContext {
+extension ProviderBuildContextExtension on BuildContext {
   /// Retrieve the value from the [Provider] by this [BuildContext].
   /// See [Provider.of].
   T get<T extends Object>({bool listen = false}) =>
@@ -157,6 +157,8 @@ class _FactoryProviderState<T extends Object>
 
   @override
   Widget build(BuildContext context) {
+    assert(widget.child != null);
+
     return _ProviderScope<T>(
       getValue: () {
         initValue();
@@ -216,6 +218,7 @@ class _ValueProviderState<T extends Object> extends State<_ValueProvider<T>> {
   @override
   Widget build(BuildContext context) {
     final val = widget.value;
+    assert(widget.child != null);
 
     return _ProviderScope<T>(
       value: val,
@@ -361,7 +364,7 @@ class Providers extends StatelessWidget {
     Key? key,
     required List<Provider<dynamic>> providers,
     required Widget child,
-  })   : assert(providers != null),
+  })   : assert(providers != null && providers.isNotEmpty),
         assert(child != null),
         _child =
             providers.reversed.fold(child, (acc, e) => e._copyWithChild(acc)),
