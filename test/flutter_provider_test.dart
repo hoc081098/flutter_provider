@@ -148,6 +148,51 @@ void main() {
       expect(buildCount, equals(2));
     });
 
+    testWidgets('update should notify has no effect if using Provider.factory',
+        (tester) async {
+      var buildCount = 0;
+      late int buildValue;
+      final builder = Builder(
+        builder: (BuildContext context) {
+          buildValue = Provider.of<int>(context, listen: true);
+          buildCount++;
+          return Container();
+        },
+      );
+
+      await tester.pumpWidget(
+        Provider<int>.factory(
+          (_) => 69,
+          child: builder,
+        ),
+      );
+
+      expect(buildCount, equals(1));
+      expect(buildValue, equals(69));
+
+      // value changed
+      await tester.pumpWidget(
+        Provider<int>.factory(
+          (_) => 96,
+          child: builder,
+        ),
+      );
+
+      expect(buildCount, equals(1));
+      expect(buildValue, equals(69));
+
+      // value didn't change
+      await tester.pumpWidget(
+        Provider<int>.factory(
+          (_) => 96,
+          child: builder,
+        ),
+      );
+
+      expect(buildCount, equals(1));
+      expect(buildValue, equals(69));
+    });
+
     testWidgets('extension method', (tester) async {
       late String value;
 
@@ -167,144 +212,216 @@ void main() {
     });
 
     testWidgets('disposer called', (tester) async {
-      late String value;
+      {
+        late String value;
+
+        await tester.pumpWidget(
+          Provider<String>.value(
+            'Hello',
+            disposer: expectAsync1(
+              (v) {
+                expect(value, 'Hello');
+                expect(v, 'Hello');
+              },
+              count: 1,
+            ),
+            child: Builder(
+              builder: (context) {
+                value = context.get();
+                return const SizedBox();
+              },
+            ),
+          ),
+        );
+
+        await tester.pumpWidget(const SizedBox());
+      }
+
+      {
+        late String value;
+
+        await tester.pumpWidget(
+          Provider<String>.factory(
+            (_) => 'Hello',
+            disposer: expectAsync1(
+              (v) {
+                expect(value, 'Hello');
+                expect(v, 'Hello');
+              },
+              count: 1,
+            ),
+            child: Builder(
+              builder: (context) {
+                value = context.get();
+                return const SizedBox();
+              },
+            ),
+          ),
+        );
+
+        await tester.pumpWidget(const SizedBox());
+      }
+
+      {
+        await tester.pumpWidget(
+          Provider<String>.factory(
+            (_) => 'Hello',
+            disposer: expectAsync1((v) => throw v, count: 0, max: 0),
+            child: Builder(
+              builder: (context) {
+                return const SizedBox();
+              },
+            ),
+          ),
+        );
+
+        await tester.pumpWidget(const SizedBox());
+        await tester.pump(const Duration(seconds: 2));
+      }
+    });
+
+    testWidgets('lazy creating if using Provider.factory', (tester) async {
+      var call = 0;
+      final key = GlobalKey();
 
       await tester.pumpWidget(
-        Provider<String>.value(
-          'Hello',
-          disposer: expectAsync1(
-            (v) {
-              expect(value, 'Hello');
-              expect(v, 'Hello');
-            },
-            count: 1,
-          ),
+        Provider<String>.factory(
+          (_) {
+            call++;
+            return 'Hello';
+          },
+          disposer: (v) {
+            expect(v, 'Hello');
+            expect(call, 1);
+          },
           child: Builder(
+            key: key,
             builder: (context) {
-              value = context.get();
               return const SizedBox();
             },
           ),
         ),
       );
+      await tester.pump(const Duration(seconds: 2));
+
+      expect(call, 0);
+      expect(key.currentContext!.get<String>(), 'Hello');
+      expect(call, 1);
 
       await tester.pumpWidget(const SizedBox());
+      await tester.pump(const Duration(seconds: 2));
     });
   });
 
-  group(
-    'Test Providers',
-    () {
-      testWidgets('Providers with empty providers returns child',
-          (tester) async {
-        await tester.pumpWidget(
-          Providers(
-            child: Text(
-              'Hello',
-              textDirection: TextDirection.ltr,
-            ),
-            providers: [],
+  group('Test Providers', () {
+    testWidgets('Providers with empty providers returns child', (tester) async {
+      await tester.pumpWidget(
+        Providers(
+          child: Text(
+            'Hello',
+            textDirection: TextDirection.ltr,
           ),
-        );
+          providers: [],
+        ),
+      );
 
-        expect(find.text('Hello'), findsOneWidget);
-      });
-      testWidgets('Providers children can only access parent providers',
-          (tester) async {
-        final k1 = GlobalKey();
-        final k2 = GlobalKey();
-        final k3 = GlobalKey();
-        final p1 = Provider<int>.value(42, key: k1);
-        final p2 = Provider<String>.value('foo', key: k2);
-        final p3 = Provider<double>.value(44.0, key: k3);
+      expect(find.text('Hello'), findsOneWidget);
+    });
+    testWidgets('Providers children can only access parent providers',
+        (tester) async {
+      final k1 = GlobalKey();
+      final k2 = GlobalKey();
+      final k3 = GlobalKey();
+      final p1 = Provider<int>.value(42, key: k1);
+      final p2 = Provider<String>.value('foo', key: k2);
+      final p3 = Provider<double>.value(44.0, key: k3);
 
-        final keyChild = GlobalKey();
-        await tester.pumpWidget(
-          Providers(
-            providers: [p1, p2, p3],
-            child: Text(
-              'Foo',
-              key: keyChild,
-              textDirection: TextDirection.ltr,
-            ),
+      final keyChild = GlobalKey();
+      await tester.pumpWidget(
+        Providers(
+          providers: [p1, p2, p3],
+          child: Text(
+            'Foo',
+            key: keyChild,
+            textDirection: TextDirection.ltr,
           ),
-        );
+        ),
+      );
 
-        await tester.pump(const Duration(milliseconds: 500));
-        expect(find.text('Foo'), findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text('Foo'), findsOneWidget);
 
-        expect(
-          () => Provider.of<int>(k1.currentContext!),
-          throwsA(
-            const TypeMatcher<ProviderError>().having(
-              (err) => err.type,
-              'type',
-              int,
-            ),
+      expect(
+        () => Provider.of<int>(k1.currentContext!),
+        throwsA(
+          const TypeMatcher<ProviderError>().having(
+            (err) => err.type,
+            'type',
+            int,
           ),
-        );
-        expect(
-          () => Provider.of<String>(k1.currentContext!),
-          throwsA(
-            const TypeMatcher<ProviderError>().having(
-              (err) => err.type,
-              'type',
-              String,
-            ),
+        ),
+      );
+      expect(
+        () => Provider.of<String>(k1.currentContext!),
+        throwsA(
+          const TypeMatcher<ProviderError>().having(
+            (err) => err.type,
+            'type',
+            String,
           ),
-        );
-        expect(
-          () => Provider.of<double>(k1.currentContext!),
-          throwsA(
-            const TypeMatcher<ProviderError>().having(
-              (err) => err.type,
-              'type',
-              double,
-            ),
+        ),
+      );
+      expect(
+        () => Provider.of<double>(k1.currentContext!),
+        throwsA(
+          const TypeMatcher<ProviderError>().having(
+            (err) => err.type,
+            'type',
+            double,
           ),
-        );
+        ),
+      );
 
-        expect(Provider.of<int>(k2.currentContext!), 42);
-        expect(
-          () => Provider.of<String>(k2.currentContext!),
-          throwsA(
-            const TypeMatcher<ProviderError>().having(
-              (err) => err.type,
-              'type',
-              String,
-            ),
+      expect(Provider.of<int>(k2.currentContext!), 42);
+      expect(
+        () => Provider.of<String>(k2.currentContext!),
+        throwsA(
+          const TypeMatcher<ProviderError>().having(
+            (err) => err.type,
+            'type',
+            String,
           ),
-        );
-        expect(
-          () => Provider.of<double>(k2.currentContext!),
-          throwsA(
-            const TypeMatcher<ProviderError>().having(
-              (err) => err.type,
-              'type',
-              double,
-            ),
+        ),
+      );
+      expect(
+        () => Provider.of<double>(k2.currentContext!),
+        throwsA(
+          const TypeMatcher<ProviderError>().having(
+            (err) => err.type,
+            'type',
+            double,
           ),
-        );
+        ),
+      );
 
-        expect(Provider.of<int>(k3.currentContext!), 42);
-        expect(Provider.of<String>(k3.currentContext!), 'foo');
-        expect(
-          () => Provider.of<double>(k3.currentContext!),
-          throwsA(
-            const TypeMatcher<ProviderError>().having(
-              (err) => err.type,
-              'type',
-              double,
-            ),
+      expect(Provider.of<int>(k3.currentContext!), 42);
+      expect(Provider.of<String>(k3.currentContext!), 'foo');
+      expect(
+        () => Provider.of<double>(k3.currentContext!),
+        throwsA(
+          const TypeMatcher<ProviderError>().having(
+            (err) => err.type,
+            'type',
+            double,
           ),
-        );
+        ),
+      );
 
-        expect(Provider.of<int>(keyChild.currentContext!), 42);
-        expect(Provider.of<String>(keyChild.currentContext!), 'foo');
-        expect(Provider.of<double>(keyChild.currentContext!), 44);
-      });
-    },
-  );
+      expect(Provider.of<int>(keyChild.currentContext!), 42);
+      expect(Provider.of<String>(keyChild.currentContext!), 'foo');
+      expect(Provider.of<double>(keyChild.currentContext!), 44);
+    });
+  });
 
   group('Test Consumer', () {
     testWidgets('Obtains value from Provider<T> using Consumer',
