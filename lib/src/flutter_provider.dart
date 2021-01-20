@@ -5,30 +5,27 @@ import 'package:flutter/material.dart';
 
 /// Provides a [value] to all descendants of this Widget. This should
 /// generally be a root widget in your App
-class Provider<T extends Object> extends StatefulWidget {
-  final T Function(BuildContext)? _factory;
-  final T? _value;
-
-  final void Function(T)? _disposer;
-  final bool Function(T, T)? _updateShouldNotify;
-  final Widget? _child;
+abstract class Provider<T extends Object> extends StatefulWidget {
+  const Provider._({Key? key}) : super(key: key);
 
   /// Provide a value to all descendants.
   /// The value created on first access by calling [factory].
   ///
   /// The [disposer] will called when [State] of [Provider] is removed from the tree permanently ([State.dispose] called).
-  const Provider.factory(
+  factory Provider.factory(
     T Function(BuildContext) factory, {
     Key? key,
     void Function(T)? disposer,
     Widget? child,
-  })  : assert(factory != null),
-        _factory = factory,
-        _value = null,
-        _disposer = disposer,
-        _updateShouldNotify = null,
-        _child = child,
-        super(key: key);
+  }) {
+    assert(factory != null);
+    return _FactoryProvider<T>(
+      key: key,
+      factory: factory,
+      disposer: disposer,
+      child: child,
+    );
+  }
 
   /// Provide a [value] to all descendants.
   ///
@@ -38,19 +35,22 @@ class Provider<T extends Object> extends StatefulWidget {
   ///
   /// The [disposer] will called when [State] of [Provider] is removed from the tree permanently ([State.dispose] called),
   /// or whenever the widget configuration changes with difference value ([State.didUpdateWidget] called).
-  const Provider.value(
+  factory Provider.value(
     T value, {
     Key? key,
     void Function(T)? disposer,
     bool Function(T previous, T current)? updateShouldNotify,
     Widget? child,
-  })  : assert(value != null),
-        _factory = null,
-        _value = value,
-        _disposer = disposer,
-        _updateShouldNotify = updateShouldNotify ?? _notEquals,
-        _child = child,
-        super(key: key);
+  }) {
+    assert(value != null);
+    return _ValueProvider<T>(
+      value: value,
+      disposer: disposer,
+      updateShouldNotify: updateShouldNotify ?? _notEquals,
+      child: child,
+      key: key,
+    );
+  }
 
   /// A method that can be called by descendant Widgets to retrieve the [value]
   /// from the [Provider].
@@ -91,32 +91,8 @@ class Provider<T extends Object> extends StatefulWidget {
     return scope.requireValue;
   }
 
-  @override
-  State<Provider<T>> createState() {
-    return _value != null
-        ? _ValueProviderState<T>()
-        : _FactoryProviderState<T>();
-  }
-
-  Provider<T> _copyWithChild(Widget child) {
-    if (_value != null) {
-      return Provider<T>.value(
-        _value!,
-        child: child,
-        key: key,
-        updateShouldNotify: _updateShouldNotify!,
-        disposer: _disposer,
-      );
-    } else {
-      assert(_factory != null);
-      return Provider<T>.factory(
-        _factory!,
-        child: child,
-        key: key,
-        disposer: _disposer,
-      );
-    }
-  }
+  @factory
+  Provider<T> _copyWithChild(Widget child);
 }
 
 /// Retrieve the value from the [Provider] by this [BuildContext].
@@ -129,7 +105,34 @@ extension ProviderExtension on BuildContext {
 
 bool _notEquals<T>(T previous, T current) => previous != current;
 
-class _FactoryProviderState<T extends Object> extends State<Provider<T>> {
+class _FactoryProvider<T extends Object> extends Provider<T> {
+  final T Function(BuildContext) factory;
+  final void Function(T)? disposer;
+  final Widget? child;
+
+  const _FactoryProvider({
+    Key? key,
+    required this.factory,
+    required this.disposer,
+    required this.child,
+  }) : super._(key: key);
+
+  @override
+  _FactoryProviderState<T> createState() => _FactoryProviderState<T>();
+
+  @override
+  Provider<T> _copyWithChild(Widget child) {
+    return Provider<T>.factory(
+      factory,
+      child: child,
+      key: key,
+      disposer: disposer,
+    );
+  }
+}
+
+class _FactoryProviderState<T extends Object>
+    extends State<_FactoryProvider<T>> {
   T? value;
 
   @override
@@ -145,14 +148,14 @@ class _FactoryProviderState<T extends Object> extends State<Provider<T>> {
 
   void initValue() {
     if (value == null) {
-      value = widget._factory!(context);
+      value = widget.factory(context);
       assert(value != null);
     }
   }
 
   void disposeValue() {
     if (value != null) {
-      widget._disposer?.call(value!);
+      widget.disposer?.call(value!);
       value = null;
     }
   }
@@ -164,56 +167,66 @@ class _FactoryProviderState<T extends Object> extends State<Provider<T>> {
         initValue();
         return value!;
       },
-      child: widget._child!,
+      getValueNullable: () => value,
+      child: widget.child!,
     );
   }
 }
 
-class _ValueProviderState<T extends Object> extends State<Provider<T>> {
-  T? value;
+class _ValueProvider<T extends Object> extends Provider<T> {
+  final T value;
+  final void Function(T)? disposer;
+  final bool Function(T, T) updateShouldNotify;
+  final Widget? child;
+
+  const _ValueProvider({
+    Key? key,
+    required this.value,
+    required this.disposer,
+    required this.updateShouldNotify,
+    this.child,
+  }) : super._(key: key);
 
   @override
-  void initState() {
-    super.initState();
-    initValue();
+  _ValueProviderState<T> createState() => _ValueProviderState<T>();
+
+  @override
+  Provider<T> _copyWithChild(Widget child) {
+    return Provider<T>.value(
+      value,
+      child: child,
+      key: key,
+      updateShouldNotify: updateShouldNotify,
+      disposer: disposer,
+    );
   }
+}
 
+class _ValueProviderState<T extends Object> extends State<_ValueProvider<T>> {
   @override
-  void didUpdateWidget(covariant Provider<T> oldWidget) {
+  void didUpdateWidget(covariant _ValueProvider<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    final oldValue = oldWidget._value;
-    assert(oldValue != null, 'Only support for Provider.value constructor');
-
-    if (oldValue! != widget._value!) {
-      disposeValue();
-      initValue();
+    if (oldWidget.value != widget.value) {
+      oldWidget.disposer?.call(oldWidget.value);
     }
   }
 
   @override
   void dispose() {
-    disposeValue();
+    widget.disposer?.call(widget.value);
     super.dispose();
-  }
-
-  void initValue() {
-    value = widget._value!;
-    assert(value != null);
-  }
-
-  void disposeValue() {
-    assert(value != null);
-    widget._disposer?.call(value!);
-    value = null;
   }
 
   @override
   Widget build(BuildContext context) {
+    final val = widget.value;
+
     return _ProviderScope<T>(
-      value: value!,
-      updateShouldNotifyDelegate: widget._updateShouldNotify,
-      child: widget._child!,
+      value: val,
+      getValueNullable: () => val,
+      updateShouldNotifyDelegate: widget.updateShouldNotify,
+      child: widget.child!,
     );
   }
 }
@@ -223,6 +236,9 @@ class _ProviderScope<T extends Object> extends InheritedWidget {
   final T? value;
   final bool Function(T, T)? updateShouldNotifyDelegate;
 
+  /// get value but not require initialization, returns `null` when value is not created. debug purpose.
+  final T? Function() getValueNullable;
+
   T get requireValue => value ?? getValue!();
 
   _ProviderScope({
@@ -231,6 +247,7 @@ class _ProviderScope<T extends Object> extends InheritedWidget {
     this.value,
     this.updateShouldNotifyDelegate,
     required Widget child,
+    required this.getValueNullable,
   })   : assert(() {
           if (getValue == null && value == null) {
             return false;
@@ -243,6 +260,8 @@ class _ProviderScope<T extends Object> extends InheritedWidget {
               ? updateShouldNotifyDelegate != null
               : updateShouldNotifyDelegate == null;
         }()),
+        assert(child != null),
+        assert(getValueNullable != null),
         super(key: key, child: child);
 
   @override
@@ -259,7 +278,13 @@ class _ProviderScope<T extends Object> extends InheritedWidget {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
 
-    properties.add(DiagnosticsProperty<T>('value', requireValue));
+    properties.add(
+      DiagnosticsProperty<T>(
+        'value',
+        getValueNullable(),
+        ifNull: '<not yet created>',
+      ),
+    );
     properties.add(DiagnosticsProperty<Type>('type', T));
   }
 }

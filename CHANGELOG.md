@@ -3,6 +3,9 @@
 -   Migrate this package to null safety.
 -   Sdk constraints: `>=2.12.0-0 <3.0.0` based on beta release guidelines.
 -   Split to two constructors: `Provider.factory` and `Provider.value`.
+-   Added extension `BuildContext.get<T>({bool listen = false})`.
+-   Fixed many issues.
+-   Many improvements.
 
 ## 1.1.1 - Apr 14, 2019
 
