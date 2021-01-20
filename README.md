@@ -7,6 +7,7 @@
 [![Build Status](https://travis-ci.org/hoc081098/flutter_provider.svg?branch=master)](https://travis-ci.org/hoc081098/flutter_provider)
 [![codecov](https://codecov.io/gh/hoc081098/flutter_provider/branch/master/graph/badge.svg?token=BG7WmxRnbi)](https://codecov.io/gh/hoc081098/flutter_provider)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fhoc081098%2Fflutter_provider&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
 
 Flutter generic provider using InheritedWidget. An helper to easily exposes a value using InheritedWidget without having to write one.
