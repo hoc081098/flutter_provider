@@ -136,11 +136,6 @@ class _FactoryProviderState<T extends Object>
   T? value;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   void dispose() {
     disposeValue();
     super.dispose();
@@ -236,7 +231,8 @@ class _ProviderScope<T extends Object> extends InheritedWidget {
   final T? value;
   final bool Function(T, T)? updateShouldNotifyDelegate;
 
-  /// get value but not require initialization, returns `null` when value is not created. debug purpose.
+  /// Get value but not require initialization, returns `null` when value is not created.
+  /// Only for debug purpose.
   final T? Function() getValueNullable;
 
   T get requireValue => value ?? getValue!();
