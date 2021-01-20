@@ -51,6 +51,12 @@ Providers(
 ### 2. Consume
 
 ```dart
+Provider.of<T>(context);
+context.get<T>();
+Consumer<T>(builder: (context, T value) { });
+```
+
+```dart
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 

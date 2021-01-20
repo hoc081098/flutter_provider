@@ -12,8 +12,8 @@
 /// );
 ///
 /// // Retrieve api later and do something
-/// final Api api = context.get<Api>();
-///
+/// final Api api1 = context.get<Api>();
+/// final Api api2 = Provider.of<Api>(context);
 ///
 ///```
 library flutter_provider;
