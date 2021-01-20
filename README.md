@@ -5,6 +5,7 @@
 
 [![Pub](https://img.shields.io/pub/v/flutter_provider.svg)](https://pub.dartlang.org/packages/flutter_provider)
 [![Build Status](https://travis-ci.org/hoc081098/flutter_provider.svg?branch=master)](https://travis-ci.org/hoc081098/flutter_provider)
+[![codecov](https://codecov.io/gh/hoc081098/flutter_provider/branch/master/graph/badge.svg?token=BG7WmxRnbi)](https://codecov.io/gh/hoc081098/flutter_provider)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 
