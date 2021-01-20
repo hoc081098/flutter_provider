@@ -1,5 +1,3 @@
-library flutter_provider;
-
 /// # Light weight provider for flutter
 ///
 /// ## Usage example
@@ -18,4 +16,7 @@ library flutter_provider;
 ///
 ///
 ///```
+library flutter_provider;
+
+export 'src/consumer.dart';
 export 'src/flutter_provider.dart';

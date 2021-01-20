@@ -1,29 +1,50 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+// ignore_for_file: unnecessary_null_comparison
+
 /// Provides a [value] to all descendants of this Widget. This should
 /// generally be a root widget in your App
-class Provider<T> extends InheritedWidget {
-  /// The value exposed to other widgets.
-  ///
-  /// You can obtain this value this widget's descendants
-  /// using [Provider.of] method
-  final T value;
+class Provider<T extends Object> extends StatefulWidget {
+  final T Function(BuildContext)? _factory;
+  final T? _value;
 
-  /// A callback called whenever [InheritedWidget.updateShouldNotify] is called.
+  final void Function(T)? _disposer;
+  final bool Function(T, T)? _updateShouldNotify;
+  final Widget? _child;
+
+  /// [updateShouldNotify] is a callback called whenever [InheritedWidget.updateShouldNotify] is called.
   /// It should return `false` when there's no need to update its dependents.
-  ///
-  /// Default value of [_updateShouldNotify] is [_notEquals]
-  final bool Function(T, T) _updateShouldNotify;
+  /// Default value of [updateShouldNotify] is returning true if old value is not equal to current value.
+  const Provider.factory(
+    T Function(BuildContext) factory, {
+    Key? key,
+    void Function(T)? disposer,
+    Widget? child,
+  })  : assert(factory != null),
+        _factory = factory,
+        _value = null,
+        _disposer = disposer,
+        _updateShouldNotify = null,
+        _child = child,
+        super(key: key);
 
-  const Provider({
-    Key key,
-    Widget child,
-    @required this.value,
-    bool updateShouldNotify(T previous, T current),
+  /// [updateShouldNotify] is a callback called whenever [InheritedWidget.updateShouldNotify] is called.
+  /// It should return `false` when there's no need to update its dependents.
+  /// Default value of [updateShouldNotify] is returning true if old value is not equal to current value.
+  const Provider.value(
+    T value, {
+    Key? key,
+    void Function(T)? disposer,
+    bool Function(T previous, T current)? updateShouldNotify,
+    Widget? child,
   })  : assert(value != null),
+        _factory = null,
+        _value = value,
+        _disposer = disposer,
         _updateShouldNotify = updateShouldNotify ?? _notEquals,
-        super(key: key, child: child);
+        _child = child,
+        super(key: key);
 
   /// A method that can be called by descendant Widgets to retrieve the [value]
   /// from the [Provider].
@@ -31,8 +52,8 @@ class Provider<T> extends InheritedWidget {
   /// Important: When using this method, pass through complete type information
   /// or Flutter will be unable to find the correct [Provider]!
   ///
-  /// If [listen] is true (default), later value changes will
-  /// trigger a new [State.build] to widgets, and [State.didChangeDependencies] for [StatefulWidget]
+  /// If [listen] is true , later value changes will
+  /// trigger a new [State.build] to widgets, and [State.didChangeDependencies] for [StatefulWidget].
   ///
   /// ### Example
   ///
@@ -46,37 +67,195 @@ class Provider<T> extends InheritedWidget {
   ///   }
   /// }
   /// ```
-  static T of<T>(BuildContext context, {bool listen = true}) {
-    final Provider<T> provider = listen
-        ? context.dependOnInheritedWidgetOfExactType<Provider<T>>()
-        : context
-            .getElementForInheritedWidgetOfExactType<Provider<T>>()
-            ?.widget;
-    if (provider == null) {
-      throw ProviderError(_typeOf<Provider<T>>());
+  static T of<T extends Object>(BuildContext context, {bool listen = false}) {
+    if (T == dynamic) {
+      throw ProviderError();
     }
-    return provider.value;
+
+    final scope = listen
+        ? context.dependOnInheritedWidgetOfExactType<_ProviderScope<T>>()
+        : (context
+            .getElementForInheritedWidgetOfExactType<_ProviderScope<T>>()
+            ?.widget as _ProviderScope<T>?);
+
+    if (scope == null) {
+      throw ProviderError(T);
+    }
+
+    return scope.requireValue;
   }
 
   @override
-  bool updateShouldNotify(Provider<T> old) =>
-      _updateShouldNotify(old.value, value);
+  State<Provider<T>> createState() {
+    return _value != null
+        ? _ValueProviderState<T>()
+        : _FactoryProviderState<T>();
+  }
+
+  Provider<T> _copyWithChild(Widget child) {
+    if (_value != null) {
+      return Provider<T>.value(
+        _value!,
+        child: child,
+        key: key,
+        updateShouldNotify: _updateShouldNotify!,
+        disposer: _disposer,
+      );
+    } else {
+      assert(_factory != null);
+      return Provider<T>.factory(
+        _factory!,
+        child: child,
+        key: key,
+        disposer: _disposer,
+      );
+    }
+  }
+}
+
+/// Retrieve the value from the [Provider] by this [BuildContext].
+extension ProviderExtension on BuildContext {
+  /// Retrieve the value from the [Provider] by this [BuildContext].
+  /// See [Provider.of].
+  T get<T extends Object>({bool listen = false}) =>
+      Provider.of<T>(this, listen: listen);
+}
+
+bool _notEquals<T>(T previous, T current) => previous != current;
+
+class _FactoryProviderState<T extends Object> extends State<Provider<T>> {
+  T? value;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    disposeValue();
+    super.dispose();
+  }
+
+  void initValue() {
+    if (value == null) {
+      value = widget._factory!(context);
+      assert(value != null);
+    }
+  }
+
+  void disposeValue() {
+    if (value != null) {
+      widget._disposer?.call(value!);
+      value = null;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _ProviderScope<T>(
+      getValue: () {
+        initValue();
+        return value!;
+      },
+      child: widget._child!,
+    );
+  }
+}
+
+class _ValueProviderState<T extends Object> extends State<Provider<T>> {
+  T? value;
+
+  @override
+  void initState() {
+    super.initState();
+    initValue();
+  }
+
+  @override
+  void didUpdateWidget(covariant Provider<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    final oldValue = oldWidget._value;
+    assert(oldValue != null, 'Only support for Provider.value constructor');
+
+    if (oldValue! != widget._value!) {
+      disposeValue();
+      initValue();
+    }
+  }
+
+  @override
+  void dispose() {
+    disposeValue();
+    super.dispose();
+  }
+
+  void initValue() {
+    value = widget._value!;
+    assert(value != null);
+  }
+
+  void disposeValue() {
+    assert(value != null);
+    widget._disposer?.call(value!);
+    value = null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _ProviderScope<T>(
+      value: value!,
+      updateShouldNotifyDelegate: widget._updateShouldNotify,
+      child: widget._child!,
+    );
+  }
+}
+
+class _ProviderScope<T extends Object> extends InheritedWidget {
+  final T Function()? getValue;
+  final T? value;
+  final bool Function(T, T)? updateShouldNotifyDelegate;
+
+  T get requireValue => value ?? getValue!();
+
+  _ProviderScope({
+    Key? key,
+    this.getValue,
+    this.value,
+    this.updateShouldNotifyDelegate,
+    required Widget child,
+  })   : assert(() {
+          if (getValue == null && value == null) {
+            return false;
+          }
+          if (getValue != null && value != null) {
+            return false;
+          }
+
+          return value != null
+              ? updateShouldNotifyDelegate != null
+              : updateShouldNotifyDelegate == null;
+        }()),
+        super(key: key, child: child);
+
+  @override
+  bool updateShouldNotify(_ProviderScope<T> oldWidget) {
+    if (oldWidget.value != null &&
+        value != null &&
+        updateShouldNotifyDelegate != null) {
+      return updateShouldNotifyDelegate!(oldWidget.value!, value!);
+    }
+    return false;
+  }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty('value', value));
+
+    properties.add(DiagnosticsProperty<T>('value', requireValue));
+    properties.add(DiagnosticsProperty<Type>('type', T));
   }
-
-  static bool _notEquals(previous, current) => previous != current;
-
-  static Type _typeOf<T>() => T;
-
-  Provider<T> copyWithChild(Widget child) => Provider<T>(
-      child: child,
-      value: value,
-      key: key,
-      updateShouldNotify: _updateShouldNotify);
 }
 
 /// If the [Provider.of] method fails, this error will be thrown.
@@ -86,16 +265,20 @@ class Provider<T> extends InheritedWidget {
 /// can understand and fix the issue.
 class ProviderError extends Error {
   /// The type of the class the user tried to retrieve
-  final Type type;
+  final Type? type;
 
   /// Creates a [ProviderError]
-  ProviderError(this.type);
+  ProviderError([this.type]);
 
   @override
   String toString() {
-    return '''Error: No $type found. To fix, please try:
-  * Wrapping your MaterialApp with the Provider<T>
-  * Providing full type information to Provider<T> and Provider.of<T> method
+    if (type == null) {
+      return '''Error: please specify type instead of using dynamic when calling Provider.of<T>() or context.get<T>() method.''';
+    }
+
+    return '''Error: No Provider<$type> found. To fix, please try:
+  * Wrapping your MaterialApp with the Provider<$type>.
+  * Providing full type information to Provider<$type>, Provider.of<$type> and context.get<$type>() method.
 If none of these solutions work, please file a bug at:
 https://github.com/hoc081098/flutter_provider/issues/new
       ''';
@@ -138,228 +321,25 @@ https://github.com/hoc081098/flutter_provider/issues/new
 /// Technically, these two are identical. [Providers] will convert the array into a tree.
 /// This changes only the appearance of the code.
 class Providers extends StatelessWidget {
-  /// The list of providers that will be transformed into a tree.
+  final Widget _child;
+
+  /// The [providers] is a list of providers that will be transformed into a tree.
   /// The tree is created from top to bottom.
   /// The first item because to topmost provider, while the last item it the direct parent of [child].
-  final List<Provider<dynamic>> providers;
-
-  /// The child of the last provider in [providers].
+  ///
+  /// The [child] is child of the last provider in [providers].
+  ///
   /// If [providers] is empty, then [Providers] just returns [child].
-  final Widget child;
-
-  const Providers({Key key, @required this.providers, @required this.child})
-      : assert(providers != null),
+  Providers({
+    Key? key,
+    required List<Provider<dynamic>> providers,
+    required Widget child,
+  })   : assert(providers != null),
         assert(child != null),
+        _child =
+            providers.reversed.fold(child, (acc, e) => e._copyWithChild(acc)),
         super(key: key);
 
   @override
-  Widget build(BuildContext context) => providers.reversed
-      .fold(child, (Widget acc, Provider<dynamic> e) => e.copyWithChild(acc));
-}
-
-/// Obtain [Provider] from its ancestors and pass its value to [builder].
-/// [builder] must not be null and may be called multiple times (such as when provided value change).
-class Consumer<T> extends StatelessWidget {
-  /// Build a widget tree based on the value from a [Provider].
-  final Widget Function(BuildContext context, T t) builder;
-
-  const Consumer({
-    Key key,
-    @required this.builder,
-  })  : assert(builder != null),
-        super(key: key);
-
-  @override
-  Widget build(BuildContext context) =>
-      builder(context, Provider.of<T>(context));
-}
-
-/// Obtain 2 [Provider] from its ancestors and pass its value to [builder].
-/// [builder] must not be null and may be called multiple times (such as when provided values change).
-class Consumer2<A, B> extends StatelessWidget {
-  /// Build a widget tree based on the value from a [Provider].
-  final Widget Function(BuildContext context, A a, B b) builder;
-
-  const Consumer2({
-    Key key,
-    @required this.builder,
-  })  : assert(builder != null),
-        super(key: key);
-
-  @override
-  Widget build(BuildContext context) =>
-      builder(context, Provider.of<A>(context), Provider.of<B>(context));
-}
-
-/// Obtain 3 [Provider] from its ancestors and pass its value to [builder].
-/// [builder] must not be null and may be called multiple times (such as when provided values change).
-class Consumer3<A, B, C> extends StatelessWidget {
-  /// Build a widget tree based on the value from a [Provider].
-  final Widget Function(BuildContext context, A a, B b, C c) builder;
-
-  const Consumer3({
-    Key key,
-    @required this.builder,
-  })  : assert(builder != null),
-        super(key: key);
-
-  @override
-  Widget build(BuildContext context) => builder(
-        context,
-        Provider.of<A>(context),
-        Provider.of<B>(context),
-        Provider.of<C>(context),
-      );
-}
-
-/// Obtain 4 [Provider] from its ancestors and pass its value to [builder].
-/// [builder] must not be null and may be called multiple times (such as when provided values change).
-class Consumer4<A, B, C, D> extends StatelessWidget {
-  /// Build a widget tree based on the value from a [Provider].
-  final Widget Function(BuildContext context, A a, B b, C c, D d) builder;
-
-  const Consumer4({
-    Key key,
-    @required this.builder,
-  })  : assert(builder != null),
-        super(key: key);
-
-  @override
-  Widget build(BuildContext context) => builder(
-        context,
-        Provider.of<A>(context),
-        Provider.of<B>(context),
-        Provider.of<C>(context),
-        Provider.of<D>(context),
-      );
-}
-
-/// Obtain 5 [Provider] from its ancestors and pass its value to [builder].
-/// [builder] must not be null and may be called multiple times (such as when provided values change).
-class Consumer5<A, B, C, D, E> extends StatelessWidget {
-  /// Build a widget tree based on the value from a [Provider].
-  final Widget Function(BuildContext context, A a, B b, C c, D d, E e) builder;
-
-  const Consumer5({
-    Key key,
-    @required this.builder,
-  })  : assert(builder != null),
-        super(key: key);
-
-  @override
-  Widget build(BuildContext context) => builder(
-        context,
-        Provider.of<A>(context),
-        Provider.of<B>(context),
-        Provider.of<C>(context),
-        Provider.of<D>(context),
-        Provider.of<E>(context),
-      );
-}
-
-/// Obtain 6 [Provider] from its ancestors and pass its value to [builder].
-/// [builder] must not be null and may be called multiple times (such as when provided values change).
-class Consumer6<A, B, C, D, E, F> extends StatelessWidget {
-  /// Build a widget tree based on the value from a [Provider].
-  final Widget Function(BuildContext context, A a, B b, C c, D d, E e, F f)
-      builder;
-
-  const Consumer6({
-    Key key,
-    @required this.builder,
-  })  : assert(builder != null),
-        super(key: key);
-
-  @override
-  Widget build(BuildContext context) => builder(
-        context,
-        Provider.of<A>(context),
-        Provider.of<B>(context),
-        Provider.of<C>(context),
-        Provider.of<D>(context),
-        Provider.of<E>(context),
-        Provider.of<F>(context),
-      );
-}
-
-/// Obtain 7 [Provider] from its ancestors and pass its value to [builder].
-/// [builder] must not be null and may be called multiple times (such as when provided values change).
-class Consumer7<A, B, C, D, E, F, G> extends StatelessWidget {
-  /// Build a widget tree based on the value from a [Provider].
-  final Widget Function(BuildContext context, A a, B b, C c, D d, E e, F f, G g)
-      builder;
-
-  const Consumer7({
-    Key key,
-    @required this.builder,
-  })  : assert(builder != null),
-        super(key: key);
-
-  @override
-  Widget build(BuildContext context) => builder(
-        context,
-        Provider.of<A>(context),
-        Provider.of<B>(context),
-        Provider.of<C>(context),
-        Provider.of<D>(context),
-        Provider.of<E>(context),
-        Provider.of<F>(context),
-        Provider.of<G>(context),
-      );
-}
-
-// Obtain 8 [Provider] from its ancestors and pass its value to [builder].
-/// [builder] must not be null and may be called multiple times (such as when provided values change).
-class Consumer8<A, B, C, D, E, F, G, H> extends StatelessWidget {
-  /// Build a widget tree based on the value from a [Provider].
-  final Widget Function(
-      BuildContext context, A a, B b, C c, D d, E e, F f, G g, H h) builder;
-
-  const Consumer8({
-    Key key,
-    @required this.builder,
-  })  : assert(builder != null),
-        super(key: key);
-
-  @override
-  Widget build(BuildContext context) => builder(
-        context,
-        Provider.of<A>(context),
-        Provider.of<B>(context),
-        Provider.of<C>(context),
-        Provider.of<D>(context),
-        Provider.of<E>(context),
-        Provider.of<F>(context),
-        Provider.of<G>(context),
-        Provider.of<H>(context),
-      );
-}
-
-// Obtain 9 [Provider] from its ancestors and pass its value to [builder].
-/// [builder] must not be null and may be called multiple times (such as when provided values change).
-class Consumer9<A, B, C, D, E, F, G, H, I> extends StatelessWidget {
-  /// Build a widget tree based on the value from a [Provider].
-  final Widget Function(
-          BuildContext context, A a, B b, C c, D d, E e, F f, G g, H h, I i)
-      builder;
-
-  const Consumer9({
-    Key key,
-    @required this.builder,
-  })  : assert(builder != null),
-        super(key: key);
-
-  @override
-  Widget build(BuildContext context) => builder(
-        context,
-        Provider.of<A>(context),
-        Provider.of<B>(context),
-        Provider.of<C>(context),
-        Provider.of<D>(context),
-        Provider.of<E>(context),
-        Provider.of<F>(context),
-        Provider.of<G>(context),
-        Provider.of<H>(context),
-        Provider.of<I>(context),
-      );
+  Widget build(BuildContext context) => _child;
 }
