@@ -1,18 +1,18 @@
-/// # Light weight provider for flutter
+/// # Light weight provider for flutter.
 ///
 /// ## Usage example
 ///
 /// ```dart
 /// final Api api = Api(http.Client);
 /// runApp(
-///   Provider<Api>(
-///     value: api,
+///   Provider<Api>.value(
+///     api,
 ///     child: MyApp(),
 ///   )
 /// );
 ///
-/// //Retrieve api later and do something
-/// final Api api = Provider.of<Api>(context);
+/// // Retrieve api later and do something
+/// final Api api = context.get<Api>();
 ///
 ///
 ///```

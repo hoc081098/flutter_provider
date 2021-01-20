@@ -1,16 +1,65 @@
 # example
 
-A new Flutter project.
+Flutter provider example
 
-## Getting Started
+### 1. Provide
 
-This project is a starting point for a Flutter application.
+```dart
+final foo = Foo();
+final bar1 = Bar1();
 
-A few resources to get you started if this is your first Flutter project:
+Providers(
+  providers: [
+    Provider<Bar1>.value(
+      bar1,
+      disposer: (v) => v.dispose(),
+    ),
+    Provider<Bar2>.factory(
+      (context) => Bar2(),
+      disposer: (v) => v.dispose(),
+    ),
+  ],
+  child: Provider<Foo>.value(
+    foo,
+    disposer: (v) => v.dispose(),
+    child: const HomePage(),
+  ),
+);
+```
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+### 2. Consume
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```dart
+class HomePage extends StatelessWidget {
+  const HomePage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Flutter provider example'),
+      ),
+      body: Consumer3<Foo, Bar1, Bar2>(
+        builder: (BuildContext context, Foo a, Bar1 b, Bar2 c) {
+          return Container(
+            constraints: BoxConstraints.expand(),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(a.foo()),
+                  Text(b.bar1()),
+                  Text(c.bar2()),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+```
+

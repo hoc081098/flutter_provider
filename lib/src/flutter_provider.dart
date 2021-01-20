@@ -293,12 +293,12 @@ https://github.com/hoc081098/flutter_provider/issues/new
 /// As such, we're going from:
 ///
 /// ```dart
-/// Provider<Foo>(
-///   value: foo,
-///   child: Provider<Bar>(
-///     value: bar,
-///     child: Provider<Baz>(
-///       value: baz,
+/// Provider<Foo>.value(
+///   foo,
+///   child: Provider<Bar>.value(
+///     bar,
+///     child: Provider<Baz>.value(
+///       baz,
 ///       child: someWidget,
 ///     )
 ///   )
@@ -310,9 +310,9 @@ https://github.com/hoc081098/flutter_provider/issues/new
 /// ```dart
 /// Providers(
 ///   providers: [
-///     Provider<Foo>(value: foo),
-///     Provider<Bar>(value: bar),
-///     Provider<Baz>(value: baz),
+///     Provider<Foo>.value(foo),
+///     Provider<Bar>.value(bar),
+///     Provider<Baz>.value(baz),
 ///   ],
 ///   child: someWidget,
 /// )
