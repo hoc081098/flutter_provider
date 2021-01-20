@@ -259,8 +259,6 @@ class _ProviderScope<T extends Object> extends InheritedWidget {
               ? updateShouldNotifyDelegate != null
               : updateShouldNotifyDelegate == null;
         }()),
-        assert(child != null),
-        assert(getNullableValue != null),
         super(key: key, child: child);
 
   @override
