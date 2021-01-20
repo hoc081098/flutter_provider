@@ -162,7 +162,7 @@ class _FactoryProviderState<T extends Object>
         initValue();
         return value!;
       },
-      getValueNullable: () => value,
+      getNullableValue: () => value,
       child: widget.child!,
     );
   }
@@ -219,7 +219,7 @@ class _ValueProviderState<T extends Object> extends State<_ValueProvider<T>> {
 
     return _ProviderScope<T>(
       value: val,
-      getValueNullable: () => val,
+      getNullableValue: () => val,
       updateShouldNotifyDelegate: widget.updateShouldNotify,
       child: widget.child!,
     );
@@ -233,7 +233,7 @@ class _ProviderScope<T extends Object> extends InheritedWidget {
 
   /// Get value but not require initialization, returns `null` when value is not created.
   /// Only for debug purpose.
-  final T? Function() getValueNullable;
+  final T? Function() getNullableValue;
 
   T get requireValue => value ?? getValue!();
 
@@ -243,7 +243,7 @@ class _ProviderScope<T extends Object> extends InheritedWidget {
     this.value,
     this.updateShouldNotifyDelegate,
     required Widget child,
-    required this.getValueNullable,
+    required this.getNullableValue,
   })   : assert(() {
           if (getValue == null && value == null) {
             return false;
@@ -257,7 +257,7 @@ class _ProviderScope<T extends Object> extends InheritedWidget {
               : updateShouldNotifyDelegate == null;
         }()),
         assert(child != null),
-        assert(getValueNullable != null),
+        assert(getNullableValue != null),
         super(key: key, child: child);
 
   @override
@@ -277,7 +277,7 @@ class _ProviderScope<T extends Object> extends InheritedWidget {
     properties.add(
       DiagnosticsProperty<T>(
         'value',
-        getValueNullable(),
+        getNullableValue(),
         ifNull: '<not yet created>',
       ),
     );
