@@ -6,3 +6,5 @@ analyzer:
 linter:
   rules:
     - prefer_final_locals
+    - public_member_api_docs
+    - prefer_relative_imports
