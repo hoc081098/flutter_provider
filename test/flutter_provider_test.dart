@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/widgets.dart' hide TypeMatcher;
 import 'package:flutter_provider/flutter_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -510,6 +512,173 @@ void main() {
       expect(ii, 2);
       expect(ss1, 'Hello2');
       expect(ss2, 'Hello2');
+    });
+
+    testWidgets('Consumer4', (tester) async {
+      await tester.pumpWidget(
+        Providers(
+          providers: [
+            Provider<int>.value(1),
+            Provider<double>.value(2),
+            Provider<String>.value('String'),
+            Provider<bool>.value(true),
+          ],
+          child: Consumer4<int, double, String, bool>(
+            builder: (context, v1, v2, v3, v4) {
+              expect(v1, 1);
+              expect(v2, 2);
+              expect(v3, 'String');
+              expect(v4, true);
+              return Container();
+            },
+          ),
+        ),
+      );
+    });
+
+    testWidgets('Consumer5', (tester) async {
+      await tester.pumpWidget(
+        Providers(
+          providers: [
+            Provider<int>.value(1),
+            Provider<double>.value(2),
+            Provider<String>.value('String'),
+            Provider<bool>.value(true),
+            Provider<Object>.value(true),
+          ],
+          child: Consumer5<int, double, String, bool, Object>(
+            builder: (context, v1, v2, v3, v4, v5) {
+              expect(v1, 1);
+              expect(v2, 2);
+              expect(v3, 'String');
+              expect(v4, true);
+              expect(v5, true);
+              return Container();
+            },
+          ),
+        ),
+      );
+    });
+
+    testWidgets('Consumer6', (tester) async {
+      await tester.pumpWidget(
+        Providers(
+          providers: [
+            Provider<int>.value(1),
+            Provider<double>.value(2),
+            Provider<String>.value('String'),
+            Provider<bool>.value(true),
+            Provider<Object>.value(true),
+            Provider<List<int>>.value([1, 2, 3]),
+          ],
+          child: Consumer6<int, double, String, bool, Object, List<int>>(
+            builder: (context, v1, v2, v3, v4, v5, v6) {
+              expect(v1, 1);
+              expect(v2, 2);
+              expect(v3, 'String');
+              expect(v4, true);
+              expect(v5, true);
+              expect(v6, [1, 2, 3]);
+              return Container();
+            },
+          ),
+        ),
+      );
+    });
+
+    testWidgets('Consumer7', (tester) async {
+      await tester.pumpWidget(
+        Providers(
+          providers: [
+            Provider<int>.value(1),
+            Provider<double>.value(2),
+            Provider<String>.value('String'),
+            Provider<bool>.value(true),
+            Provider<Object>.value(true),
+            Provider<List<int>>.value([1, 2, 3]),
+            Provider<Set<int>>.value({1, 2, 3}),
+          ],
+          child:
+              Consumer7<int, double, String, bool, Object, List<int>, Set<int>>(
+            builder: (context, v1, v2, v3, v4, v5, v6, v7) {
+              expect(v1, 1);
+              expect(v2, 2);
+              expect(v3, 'String');
+              expect(v4, true);
+              expect(v5, true);
+              expect(v6, [1, 2, 3]);
+              expect(v7, {1, 2, 3});
+              return Container();
+            },
+          ),
+        ),
+      );
+    });
+
+    testWidgets('Consumer8', (tester) async {
+      await tester.pumpWidget(
+        Providers(
+          providers: [
+            Provider<int>.value(1),
+            Provider<double>.value(2),
+            Provider<String>.value('String'),
+            Provider<bool>.value(true),
+            Provider<Object>.value(true),
+            Provider<List<int>>.value([1, 2, 3]),
+            Provider<Set<int>>.value({1, 2, 3}),
+            Provider<Map<int, String>>.value({1: '1', 2: '2', 3: '3'}),
+          ],
+          child: Consumer8<int, double, String, bool, Object, List<int>,
+              Set<int>, Map<int, String>>(
+            builder: (context, v1, v2, v3, v4, v5, v6, v7, v8) {
+              expect(v1, 1);
+              expect(v2, 2);
+              expect(v3, 'String');
+              expect(v4, true);
+              expect(v5, true);
+              expect(v6, [1, 2, 3]);
+              expect(v7, {1, 2, 3});
+              expect(v8, {1: '1', 2: '2', 3: '3'});
+              return Container();
+            },
+          ),
+        ),
+      );
+    });
+
+    testWidgets('Consumer9', (tester) async {
+      await tester.pumpWidget(
+        Providers(
+          providers: [
+            Provider<int>.value(1),
+            Provider<double>.value(2),
+            Provider<String>.value('String'),
+            Provider<bool>.value(true),
+            Provider<Object>.value(true),
+            Provider<List<int>>.value([1, 2, 3]),
+            Provider<Set<int>>.value({1, 2, 3}),
+            Provider<Map<int, String>>.value({1: '1', 2: '2', 3: '3'}),
+            Provider<Queue<int>>.value(Queue.of([1, 2, 3])),
+          ],
+          child: Container(
+            child: Consumer9<int, double, String, bool, Object, List<int>,
+                Set<int>, Map<int, String>, Queue<int>>(
+              builder: (context, v1, v2, v3, v4, v5, v6, v7, v8, v9) {
+                expect(v1, 1);
+                expect(v2, 2);
+                expect(v3, 'String');
+                expect(v4, true);
+                expect(v5, true);
+                expect(v6, [1, 2, 3]);
+                expect(v7, {1, 2, 3});
+                expect(v8, {1: '1', 2: '2', 3: '3'});
+                expect(v9, Queue.of([1, 2, 3]));
+                return Container();
+              },
+            ),
+          ),
+        ),
+      );
     });
   });
 }
