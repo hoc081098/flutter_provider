@@ -13,9 +13,10 @@ class Provider<T extends Object> extends StatefulWidget {
   final bool Function(T, T)? _updateShouldNotify;
   final Widget? _child;
 
-  /// [updateShouldNotify] is a callback called whenever [InheritedWidget.updateShouldNotify] is called.
-  /// It should return `false` when there's no need to update its dependents.
-  /// Default value of [updateShouldNotify] is returning true if old value is not equal to current value.
+  /// Provide a value to all descendants.
+  /// The value created on first access by calling [factory].
+  ///
+  /// The [disposer] will called when [State] of [Provider] is removed from the tree permanently ([State.dispose] called).
   const Provider.factory(
     T Function(BuildContext) factory, {
     Key? key,
@@ -29,9 +30,14 @@ class Provider<T extends Object> extends StatefulWidget {
         _child = child,
         super(key: key);
 
+  /// Provide a [value] to all descendants.
+  ///
   /// [updateShouldNotify] is a callback called whenever [InheritedWidget.updateShouldNotify] is called.
   /// It should return `false` when there's no need to update its dependents.
   /// Default value of [updateShouldNotify] is returning true if old value is not equal to current value.
+  ///
+  /// The [disposer] will called when [State] of [Provider] is removed from the tree permanently ([State.dispose] called),
+  /// or whenever the widget configuration changes with difference value ([State.didUpdateWidget] called).
   const Provider.value(
     T value, {
     Key? key,
