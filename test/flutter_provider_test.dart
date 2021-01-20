@@ -336,7 +336,7 @@ void main() {
       final k3 = GlobalKey();
       final p1 = Provider<int>.value(42, key: k1);
       final p2 = Provider<String>.value('foo', key: k2);
-      final p3 = Provider<double>.value(44.0, key: k3);
+      final p3 = Provider<double>.factory((_) => 44.0, key: k3);
 
       final keyChild = GlobalKey();
       await tester.pumpWidget(
