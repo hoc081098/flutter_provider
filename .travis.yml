@@ -1,16 +1,14 @@
-language: dart
-dart:
-  - dev
-  - beta
+os:
+  - linux
+sudo: false
+before_script:
+  - git clone https://github.com/flutter/flutter.git -b beta --depth 1
+  - ./flutter/bin/flutter doctor
+  - ./flutter/bin/flutter packages get
 script:
-  - dartanalyzer --fatal-infos --fatal-warnings ./lib ./test
-  - dartfmt -n ./lib --set-exit-if-changed
-  - pub get
-  - pub global activate coverage
-  - pub run test/flutter_provider_test.dart
-  - dart --disable-service-auth-codes --enable-vm-service=8111 --pause-isolates-on-exit test/flutter_provider_test.dart &
-  - nohup pub global run coverage:collect_coverage --port=8111 --out=coverage.json --wait-paused --resume-isolates
-  - pub global run coverage:format_coverage --lcov --in=coverage.json --out=lcov.info --packages=.packages --report-on=lib
+  - ./flutter/bin/flutter analyze --no-current-package --dartdocs $TRAVIS_BUILD_DIR/lib
+  - ./flutter/bin/cache/dart-sdk/bin/dartfmt -n ./lib --set-exit-if-changed
+  - ./flutter/bin/flutter test --coverage --coverage-path=lcov.info
 after_success:
   - bash <(curl -s https://codecov.io/bash)
 cache:
