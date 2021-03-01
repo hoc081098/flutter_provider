@@ -5,4 +5,14 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-void main() {}
+import 'package:flutter/material.dart';
+import 'package:flutter_provider_example/main.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  testWidgets('Test', (tester) async {
+    await tester.pumpWidget(const MyApp());
+    await tester.tap(find.byType(TextButton));
+    await tester.pump(const Duration(seconds: 1));
+  });
+}

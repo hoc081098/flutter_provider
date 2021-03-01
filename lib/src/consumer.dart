@@ -10,6 +10,10 @@ class Consumer<T extends Object> extends StatelessWidget {
   /// Build a widget tree based on the value from a [Provider].
   final Widget Function(BuildContext context, T t) builder;
 
+  /// Creates a widget that delegates its build to a callback.
+  /// The callback will be called with value retrieved from [Provider].
+  ///
+  /// The [builder] argument must not be null.
   const Consumer({
     Key? key,
     required this.builder,
@@ -27,6 +31,10 @@ class Consumer2<A extends Object, B extends Object> extends StatelessWidget {
   /// Build a widget tree based on the values from a [Provider].
   final Widget Function(BuildContext context, A a, B b) builder;
 
+  /// Creates a widget that delegates its build to a callback.
+  /// The callback will be called with values retrieved from [Provider].
+  ///
+  /// The [builder] argument must not be null.
   const Consumer2({
     Key? key,
     required this.builder,
@@ -45,6 +53,10 @@ class Consumer3<A extends Object, B extends Object, C extends Object>
   /// Build a widget tree based on the values from a [Provider].
   final Widget Function(BuildContext context, A a, B b, C c) builder;
 
+  /// Creates a widget that delegates its build to a callback.
+  /// The callback will be called with values retrieved from [Provider].
+  ///
+  /// The [builder] argument must not be null.
   const Consumer3({
     Key? key,
     required this.builder,
@@ -67,6 +79,10 @@ class Consumer4<A extends Object, B extends Object, C extends Object,
   /// Build a widget tree based on the values from a [Provider].
   final Widget Function(BuildContext context, A a, B b, C c, D d) builder;
 
+  /// Creates a widget that delegates its build to a callback.
+  /// The callback will be called with values retrieved from [Provider].
+  ///
+  /// The [builder] argument must not be null.
   const Consumer4({
     Key? key,
     required this.builder,
@@ -90,6 +106,10 @@ class Consumer5<A extends Object, B extends Object, C extends Object,
   /// Build a widget tree based on the values from a [Provider].
   final Widget Function(BuildContext context, A a, B b, C c, D d, E e) builder;
 
+  /// Creates a widget that delegates its build to a callback.
+  /// The callback will be called with values retrieved from [Provider].
+  ///
+  /// The [builder] argument must not be null.
   const Consumer5({
     Key? key,
     required this.builder,
@@ -120,6 +140,10 @@ class Consumer6<
   final Widget Function(BuildContext context, A a, B b, C c, D d, E e, F f)
       builder;
 
+  /// Creates a widget that delegates its build to a callback.
+  /// The callback will be called with values retrieved from [Provider].
+  ///
+  /// The [builder] argument must not be null.
   const Consumer6({
     Key? key,
     required this.builder,
@@ -152,6 +176,10 @@ class Consumer7<
   final Widget Function(BuildContext context, A a, B b, C c, D d, E e, F f, G g)
       builder;
 
+  /// Creates a widget that delegates its build to a callback.
+  /// The callback will be called with values retrieved from [Provider].
+  ///
+  /// The [builder] argument must not be null.
   const Consumer7({
     Key? key,
     required this.builder,
@@ -186,6 +214,10 @@ class Consumer8<
   final Widget Function(
       BuildContext context, A a, B b, C c, D d, E e, F f, G g, H h) builder;
 
+  /// Creates a widget that delegates its build to a callback.
+  /// The callback will be called with values retrieved from [Provider].
+  ///
+  /// The [builder] argument must not be null.
   const Consumer8({
     Key? key,
     required this.builder,
@@ -223,6 +255,10 @@ class Consumer9<
           BuildContext context, A a, B b, C c, D d, E e, F f, G g, H h, I i)
       builder;
 
+  /// Creates a widget that delegates its build to a callback.
+  /// The callback will be called with values retrieved from [Provider].
+  ///
+  /// The [builder] argument must not be null.
   const Consumer9({
     Key? key,
     required this.builder,

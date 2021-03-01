@@ -5,7 +5,6 @@ import 'dart:collection';
 import 'package:flutter/widgets.dart' hide TypeMatcher;
 import 'package:flutter_provider/flutter_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:matcher/matcher.dart';
 
 import 'assert_tests.dart' as assert_tests;
 
@@ -91,8 +90,7 @@ void main() {
 
       expect(
         tester.takeException(),
-        const TypeMatcher<ProviderError>()
-            .having((err) => err.type, 'type', String),
+        isA<ProviderError>().having((err) => err.type, 'type', String),
       );
     });
 
@@ -156,50 +154,52 @@ void main() {
       expect(buildCount, equals(2));
     });
 
-    testWidgets('update should notify has no effect if using Provider.factory',
-        (tester) async {
-      var buildCount = 0;
-      int buildValue;
-      final builder = Builder(
-        builder: (BuildContext context) {
-          buildValue = Provider.of<int>(context, listen: true);
-          buildCount++;
-          return Container();
-        },
-      );
+    testWidgets(
+      'update should notify has no effect if using Provider.factory',
+      (tester) async {
+        var buildCount = 0;
+        int buildValue;
+        final builder = Builder(
+          builder: (BuildContext context) {
+            buildValue = Provider.of<int>(context, listen: true);
+            buildCount++;
+            return Container();
+          },
+        );
 
-      await tester.pumpWidget(
-        Provider<int>.factory(
-          (_) => 69,
-          child: builder,
-        ),
-      );
+        await tester.pumpWidget(
+          Provider<int>.factory(
+            (_) => 69,
+            child: builder,
+          ),
+        );
 
-      expect(buildCount, equals(1));
-      expect(buildValue, equals(69));
+        expect(buildCount, equals(1));
+        expect(buildValue, equals(69));
 
-      // value changed
-      await tester.pumpWidget(
-        Provider<int>.factory(
-          (_) => 96,
-          child: builder,
-        ),
-      );
+        // value changed
+        await tester.pumpWidget(
+          Provider<int>.factory(
+            (_) => 96,
+            child: builder,
+          ),
+        );
 
-      expect(buildCount, equals(1));
-      expect(buildValue, equals(69));
+        expect(buildCount, equals(1));
+        expect(buildValue, equals(69));
 
-      // value didn't change
-      await tester.pumpWidget(
-        Provider<int>.factory(
-          (_) => 96,
-          child: builder,
-        ),
-      );
+        // value didn't change
+        await tester.pumpWidget(
+          Provider<int>.factory(
+            (_) => 96,
+            child: builder,
+          ),
+        );
 
-      expect(buildCount, equals(1));
-      expect(buildValue, equals(69));
-    });
+        expect(buildCount, equals(1));
+        expect(buildValue, equals(69));
+      },
+    );
 
     testWidgets('extension method', (tester) async {
       String value;
@@ -397,275 +397,287 @@ void main() {
     });
 
     testWidgets(
-        'didUpdateWidget called when providing difference value, using Provider.value constructor',
-        (tester) async {
-      await tester.pumpWidget(
-        Provider<String>.factory(
-          (_) => 'String 1',
-          child: Builder(
-            builder: (context) {
-              expect(context.get<String>(), 'String 1');
-              return const SizedBox();
-            },
+      'didUpdateWidget called when providing difference value, using Provider.value constructor',
+      (tester) async {
+        await tester.pumpWidget(
+          Provider<String>.factory(
+            (_) => 'String 1',
+            child: Builder(
+              builder: (context) {
+                expect(context.get<String>(), 'String 1');
+                return const SizedBox();
+              },
+            ),
           ),
-        ),
-      );
-      await tester.pump(const Duration(seconds: 1));
+        );
+        await tester.pump(const Duration(seconds: 1));
 
-      await tester.pumpWidget(
-        Provider<String>.value(
-          'String 2',
-          disposer: expectAsync1(
-            (v) => expect(v, 'String 2'),
-            count: 1,
+        await tester.pumpWidget(
+          Provider<String>.value(
+            'String 2',
+            disposer: expectAsync1(
+              (v) => expect(v, 'String 2'),
+              count: 1,
+            ),
+            child: Builder(
+              builder: (context) {
+                expect(context.get<String>(), 'String 2');
+                return const SizedBox();
+              },
+            ),
           ),
-          child: Builder(
-            builder: (context) {
-              expect(context.get<String>(), 'String 2');
-              return const SizedBox();
-            },
-          ),
-        ),
-      );
-      await tester.pump(const Duration(seconds: 1));
+        );
+        await tester.pump(const Duration(seconds: 1));
 
-      await tester.pumpWidget(
-        Provider<String>.value(
-          'String 3',
-          disposer: expectAsync1(
-            (v) => expect(v, 'String 3'),
-            count: 1,
+        await tester.pumpWidget(
+          Provider<String>.value(
+            'String 3',
+            disposer: expectAsync1(
+              (v) => expect(v, 'String 3'),
+              count: 1,
+            ),
+            child: Builder(
+              builder: (context) {
+                expect(context.get<String>(), 'String 3');
+                return const SizedBox();
+              },
+            ),
           ),
-          child: Builder(
-            builder: (context) {
-              expect(context.get<String>(), 'String 3');
-              return const SizedBox();
-            },
-          ),
-        ),
-      );
-      await tester.pump(const Duration(seconds: 1));
-      await tester.pumpWidget(const SizedBox());
-    });
+        );
+        await tester.pump(const Duration(seconds: 1));
+        await tester.pumpWidget(const SizedBox());
+      },
+    );
   });
 
-  group('Test Providers', () {
-    testWidgets('Providers children can only access parent providers',
+  group(
+    'Test Providers',
+    () {
+      testWidgets(
+        'Providers children can only access parent providers',
         (tester) async {
-      final k = GlobalKey();
-      final k1 = GlobalKey();
-      final k2 = GlobalKey();
-      final k3 = GlobalKey();
+          final k = GlobalKey();
+          final k1 = GlobalKey();
+          final k2 = GlobalKey();
+          final k3 = GlobalKey();
 
-      final p1 = Provider<int>.value(42, key: k1);
-      final p2 = Provider<String>.value('foo', key: k2);
-      final p3 = Provider<double>.factory((_) => 44.0, key: k3);
+          final p1 = Provider<int>.value(42, key: k1);
+          final p2 = Provider<String>.value('foo', key: k2);
+          final p3 = Provider<double>.factory((_) => 44.0, key: k3);
 
-      final keyChild = GlobalKey();
-      await tester.pumpWidget(
-        Providers(
-          key: k,
-          providers: [p1, p2, p3],
-          child: Text(
-            'Foo',
-            key: keyChild,
-            textDirection: TextDirection.ltr,
-          ),
-        ),
-      );
+          final keyChild = GlobalKey();
+          await tester.pumpWidget(
+            Providers(
+              key: k,
+              providers: [p1, p2, p3],
+              child: Text(
+                'Foo',
+                key: keyChild,
+                textDirection: TextDirection.ltr,
+              ),
+            ),
+          );
 
-      await tester.pump(const Duration(milliseconds: 500));
+          await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.text('Foo'), findsOneWidget);
-      expect(
-        find.byType(Providers).evaluate().single.widget,
-        isA<Providers>().having((s) => s.key, 'key', k),
-      );
-      expect(
-        find
-            .byWidgetPredicate((widget) => widget is Provider<int>)
-            .evaluate()
-            .single
-            .widget,
-        isA<Provider<int>>().having((s) => s.key, 'key', k1),
-      );
-      expect(
-        find
-            .byWidgetPredicate((widget) => widget is Provider<String>)
-            .evaluate()
-            .single
-            .widget,
-        isA<Provider<String>>().having((s) => s.key, 'key', k2),
-      );
-      expect(
-        find
-            .byWidgetPredicate((widget) => widget is Provider<double>)
-            .evaluate()
-            .single
-            .widget,
-        isA<Provider<double>>().having((s) => s.key, 'key', k3),
-      );
+          expect(find.text('Foo'), findsOneWidget);
+          expect(
+            find.byType(Providers).evaluate().single.widget,
+            isA<Providers>().having((s) => s.key, 'key', k),
+          );
+          expect(
+            find
+                .byWidgetPredicate((widget) => widget is Provider<int>)
+                .evaluate()
+                .single
+                .widget,
+            isA<Provider<int>>().having((s) => s.key, 'key', k1),
+          );
+          expect(
+            find
+                .byWidgetPredicate((widget) => widget is Provider<String>)
+                .evaluate()
+                .single
+                .widget,
+            isA<Provider<String>>().having((s) => s.key, 'key', k2),
+          );
+          expect(
+            find
+                .byWidgetPredicate((widget) => widget is Provider<double>)
+                .evaluate()
+                .single
+                .widget,
+            isA<Provider<double>>().having((s) => s.key, 'key', k3),
+          );
 
-      expect(
-        () => Provider.of<int>(k1.currentContext),
-        throwsA(
-          const TypeMatcher<ProviderError>().having(
-            (err) => err.type,
-            'type',
-            int,
-          ),
-        ),
-      );
-      expect(
-        () => Provider.of<String>(k1.currentContext),
-        throwsA(
-          const TypeMatcher<ProviderError>().having(
-            (err) => err.type,
-            'type',
-            String,
-          ),
-        ),
-      );
-      expect(
-        () => Provider.of<double>(k1.currentContext),
-        throwsA(
-          const TypeMatcher<ProviderError>().having(
-            (err) => err.type,
-            'type',
-            double,
-          ),
-        ),
-      );
+          expect(
+            () => Provider.of<int>(k1.currentContext),
+            throwsA(
+              isA<ProviderError>().having(
+                (err) => err.type,
+                'type',
+                int,
+              ),
+            ),
+          );
+          expect(
+            () => Provider.of<String>(k1.currentContext),
+            throwsA(
+              isA<ProviderError>().having(
+                (err) => err.type,
+                'type',
+                String,
+              ),
+            ),
+          );
+          expect(
+            () => Provider.of<double>(k1.currentContext),
+            throwsA(
+              isA<ProviderError>().having(
+                (err) => err.type,
+                'type',
+                double,
+              ),
+            ),
+          );
 
-      expect(Provider.of<int>(k2.currentContext), 42);
-      expect(
-        () => Provider.of<String>(k2.currentContext),
-        throwsA(
-          const TypeMatcher<ProviderError>().having(
-            (err) => err.type,
-            'type',
-            String,
-          ),
-        ),
-      );
-      expect(
-        () => Provider.of<double>(k2.currentContext),
-        throwsA(
-          const TypeMatcher<ProviderError>().having(
-            (err) => err.type,
-            'type',
-            double,
-          ),
-        ),
-      );
+          expect(Provider.of<int>(k2.currentContext), 42);
+          expect(
+            () => Provider.of<String>(k2.currentContext),
+            throwsA(
+              isA<ProviderError>().having(
+                (err) => err.type,
+                'type',
+                String,
+              ),
+            ),
+          );
+          expect(
+            () => Provider.of<double>(k2.currentContext),
+            throwsA(
+              isA<ProviderError>().having(
+                (err) => err.type,
+                'type',
+                double,
+              ),
+            ),
+          );
 
-      expect(Provider.of<int>(k3.currentContext), 42);
-      expect(Provider.of<String>(k3.currentContext), 'foo');
-      expect(
-        () => Provider.of<double>(k3.currentContext),
-        throwsA(
-          const TypeMatcher<ProviderError>().having(
-            (err) => err.type,
-            'type',
-            double,
-          ),
-        ),
-      );
+          expect(Provider.of<int>(k3.currentContext), 42);
+          expect(Provider.of<String>(k3.currentContext), 'foo');
+          expect(
+            () => Provider.of<double>(k3.currentContext),
+            throwsA(
+              isA<ProviderError>().having(
+                (err) => err.type,
+                'type',
+                double,
+              ),
+            ),
+          );
 
-      expect(Provider.of<int>(keyChild.currentContext), 42);
-      expect(Provider.of<String>(keyChild.currentContext), 'foo');
-      expect(Provider.of<double>(keyChild.currentContext), 44);
-    });
-  });
+          expect(Provider.of<int>(keyChild.currentContext), 42);
+          expect(Provider.of<String>(keyChild.currentContext), 'foo');
+          expect(Provider.of<double>(keyChild.currentContext), 44);
+        },
+      );
+    },
+  );
 
   group('Test Consumer', () {
-    testWidgets('Obtains value from Provider<T> using Consumer',
-        (tester) async {
-      final key = GlobalKey();
+    testWidgets(
+      'Obtains value from Provider<T> using Consumer',
+      (tester) async {
+        final key = GlobalKey();
 
-      BuildContext ctx;
-      int val;
-      await tester.pumpWidget(
-        Provider<int>.value(
-          99,
-          child: Consumer<int>(
-            key: key,
-            builder: (context, value) {
-              ctx = context;
-              val = value;
-              return Container();
-            },
+        BuildContext ctx;
+        int val;
+        await tester.pumpWidget(
+          Provider<int>.value(
+            99,
+            child: Consumer<int>(
+              key: key,
+              builder: (context, value) {
+                ctx = context;
+                val = value;
+                return Container();
+              },
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(ctx, key.currentContext);
-      expect(val, 99);
-    });
+        expect(ctx, key.currentContext);
+        expect(val, 99);
+      },
+    );
 
-    testWidgets('Obtains value from Provider<T> using Consumer2',
-        (tester) async {
-      final key = GlobalKey();
+    testWidgets(
+      'Obtains value from Provider<T> using Consumer2',
+      (tester) async {
+        final key = GlobalKey();
 
-      BuildContext ctx;
-      int ii;
-      String ss;
-      await tester.pumpWidget(
-        Providers(
-          providers: [
-            Provider<int>.value(2),
-            Provider<String>.value('Hello'),
-          ],
-          child: Consumer2<int, String>(
-            key: key,
-            builder: (context, i, s) {
-              ctx = context;
-              ii = i;
-              ss = s;
-              return Container();
-            },
+        BuildContext ctx;
+        int ii;
+        String ss;
+        await tester.pumpWidget(
+          Providers(
+            providers: [
+              Provider<int>.value(2),
+              Provider<String>.value('Hello'),
+            ],
+            child: Consumer2<int, String>(
+              key: key,
+              builder: (context, i, s) {
+                ctx = context;
+                ii = i;
+                ss = s;
+                return Container();
+              },
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(ctx, key.currentContext);
-      expect(ii, 2);
-      expect(ss, 'Hello');
-    });
+        expect(ctx, key.currentContext);
+        expect(ii, 2);
+        expect(ss, 'Hello');
+      },
+    );
 
-    testWidgets('Obtains value from Provider<T> using Consumer3',
-        (tester) async {
-      final key = GlobalKey();
+    testWidgets(
+      'Obtains value from Provider<T> using Consumer3',
+      (tester) async {
+        final key = GlobalKey();
 
-      BuildContext ctx;
-      int ii;
-      String ss1;
-      String ss2;
-      await tester.pumpWidget(
-        Providers(
-          providers: [
-            Provider<int>.value(2),
-            Provider<String>.value('Hello'),
-            Provider<String>.value('Hello2'),
-          ],
-          child: Consumer3<int, String, String>(
-            key: key,
-            builder: (context, i, s1, s2) {
-              ctx = context;
-              ii = i;
-              ss1 = s1;
-              ss2 = s2;
-              return Container();
-            },
+        BuildContext ctx;
+        int ii;
+        String ss1;
+        String ss2;
+        await tester.pumpWidget(
+          Providers(
+            providers: [
+              Provider<int>.value(2),
+              Provider<String>.value('Hello'),
+              Provider<String>.value('Hello2'),
+            ],
+            child: Consumer3<int, String, String>(
+              key: key,
+              builder: (context, i, s1, s2) {
+                ctx = context;
+                ii = i;
+                ss1 = s1;
+                ss2 = s2;
+                return Container();
+              },
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(ctx, key.currentContext);
-      expect(ii, 2);
-      expect(ss1, 'Hello2');
-      expect(ss2, 'Hello2');
-    });
+        expect(ctx, key.currentContext);
+        expect(ii, 2);
+        expect(ss1, 'Hello2');
+        expect(ss2, 'Hello2');
+      },
+    );
 
     testWidgets('Consumer4', (tester) async {
       await tester.pumpWidget(
