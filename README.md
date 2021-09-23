@@ -94,4 +94,4 @@ class HomePage extends StatelessWidget {
 # License
     MIT License
     
-    Copyright (c) 2021 Petrus Nguyễn Thái Học
+    Copyright (c) 2019-2021 Petrus Nguyễn Thái Học
