@@ -2,8 +2,6 @@ import 'package:flutter/widgets.dart';
 
 import '../flutter_provider.dart';
 
-// ignore_for_file: unnecessary_null_comparison
-
 /// Obtain [Provider] from its ancestors and pass its value to [builder].
 /// [builder] must not be null and may be called multiple times (such as when provided value change).
 class Consumer<T extends Object> extends StatelessWidget {
@@ -17,8 +15,7 @@ class Consumer<T extends Object> extends StatelessWidget {
   const Consumer({
     Key? key,
     required this.builder,
-  })   : assert(builder != null),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) =>
@@ -38,8 +35,7 @@ class Consumer2<A extends Object, B extends Object> extends StatelessWidget {
   const Consumer2({
     Key? key,
     required this.builder,
-  })   : assert(builder != null),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) =>
@@ -60,8 +56,7 @@ class Consumer3<A extends Object, B extends Object, C extends Object>
   const Consumer3({
     Key? key,
     required this.builder,
-  })   : assert(builder != null),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) => builder(
@@ -86,8 +81,7 @@ class Consumer4<A extends Object, B extends Object, C extends Object,
   const Consumer4({
     Key? key,
     required this.builder,
-  })   : assert(builder != null),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) => builder(
@@ -113,8 +107,7 @@ class Consumer5<A extends Object, B extends Object, C extends Object,
   const Consumer5({
     Key? key,
     required this.builder,
-  })   : assert(builder != null),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) => builder(
@@ -147,8 +140,7 @@ class Consumer6<
   const Consumer6({
     Key? key,
     required this.builder,
-  })   : assert(builder != null),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) => builder(
@@ -183,8 +175,7 @@ class Consumer7<
   const Consumer7({
     Key? key,
     required this.builder,
-  })   : assert(builder != null),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) => builder(
@@ -221,8 +212,7 @@ class Consumer8<
   const Consumer8({
     Key? key,
     required this.builder,
-  })   : assert(builder != null),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) => builder(
@@ -262,8 +252,7 @@ class Consumer9<
   const Consumer9({
     Key? key,
     required this.builder,
-  })   : assert(builder != null),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) => builder(

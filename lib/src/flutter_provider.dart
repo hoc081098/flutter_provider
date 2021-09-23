@@ -1,8 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-// ignore_for_file: unnecessary_null_comparison
-
 /// Provides a [value] to all descendants of this Widget. This should
 /// generally be a root widget in your App
 abstract class Provider<T extends Object> extends StatefulWidget {
@@ -17,15 +15,13 @@ abstract class Provider<T extends Object> extends StatefulWidget {
     Key? key,
     void Function(T)? disposer,
     Widget? child,
-  }) {
-    assert(factory != null);
-    return _FactoryProvider<T>(
-      key: key,
-      factory: factory,
-      disposer: disposer,
-      child: child,
-    );
-  }
+  }) =>
+      _FactoryProvider<T>(
+        key: key,
+        factory: factory,
+        disposer: disposer,
+        child: child,
+      );
 
   /// Provide a [value] to all descendants.
   ///
@@ -41,16 +37,14 @@ abstract class Provider<T extends Object> extends StatefulWidget {
     void Function(T)? disposer,
     bool Function(T previous, T current)? updateShouldNotify,
     Widget? child,
-  }) {
-    assert(value != null);
-    return _ValueProvider<T>(
-      value: value,
-      disposer: disposer,
-      updateShouldNotify: updateShouldNotify ?? _notEquals,
-      child: child,
-      key: key,
-    );
-  }
+  }) =>
+      _ValueProvider<T>(
+        value: value,
+        disposer: disposer,
+        updateShouldNotify: updateShouldNotify ?? _notEquals,
+        child: child,
+        key: key,
+      );
 
   /// A method that can be called by descendant Widgets to retrieve the [value]
   /// from the [Provider].
@@ -247,7 +241,7 @@ class _ProviderScope<T extends Object> extends InheritedWidget {
     this.updateShouldNotifyDelegate,
     required Widget child,
     required this.getNullableValue,
-  })   : assert(() {
+  })  : assert(() {
           if (getValue == null && value == null) {
             return false;
           }
@@ -362,8 +356,7 @@ class Providers extends StatelessWidget {
     Key? key,
     required List<Provider<dynamic>> providers,
     required Widget child,
-  })   : assert(providers != null && providers.isNotEmpty),
-        assert(child != null),
+  })  : assert(providers.isNotEmpty),
         _child =
             providers.reversed.fold(child, (acc, e) => e._copyWithChild(acc)),
         super(key: key);

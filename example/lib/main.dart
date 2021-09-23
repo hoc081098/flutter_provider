@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:flutter_provider/flutter_provider.dart';
 
@@ -31,7 +33,7 @@ class Bar2 {
   void dispose() => print('$this::dispose');
 }
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -41,48 +43,48 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Provider example',
       theme: ThemeData.dark(),
-      home: WelcomePage(),
+      home: const WelcomePage(),
     );
   }
 }
 
 class WelcomePage extends StatelessWidget {
+  const WelcomePage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(
-        child: TextButton(
-          child: Text('GO TO HOME'),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute<void>(
-                builder: (context) {
-                  final foo = Foo();
-                  final bar1 = Bar1();
+    return Center(
+      child: TextButton(
+        child: const Text('GO TO HOME'),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute<void>(
+              builder: (context) {
+                final foo = Foo();
+                final bar1 = Bar1();
 
-                  return Providers(
-                    providers: [
-                      Provider<Bar1>.value(
-                        bar1,
-                        disposer: (v) => v.dispose(),
-                      ),
-                      Provider<Bar2>.factory(
-                        (context) => Bar2(),
-                        disposer: (v) => v.dispose(),
-                      ),
-                    ],
-                    child: Provider<Foo>.value(
-                      foo,
+                return Providers(
+                  providers: [
+                    Provider<Bar1>.value(
+                      bar1,
                       disposer: (v) => v.dispose(),
-                      child: const HomePage(),
                     ),
-                  );
-                },
-              ),
-            );
-          },
-        ),
+                    Provider<Bar2>.factory(
+                      (context) => Bar2(),
+                      disposer: (v) => v.dispose(),
+                    ),
+                  ],
+                  child: Provider<Foo>.value(
+                    foo,
+                    disposer: (v) => v.dispose(),
+                    child: const HomePage(),
+                  ),
+                );
+              },
+            ),
+          );
+        },
       ),
     );
   }
@@ -95,12 +97,12 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flutter provider example'),
+        title: const Text('Flutter provider example'),
       ),
       body: Consumer3<Foo, Bar1, Bar2>(
         builder: (BuildContext context, Foo a, Bar1 b, Bar2 c) {
           return Container(
-            constraints: BoxConstraints.expand(),
+            constraints: const BoxConstraints.expand(),
             child: Center(
               child: Column(
                 mainAxisSize: MainAxisSize.max,

@@ -2,15 +2,11 @@
 
 import 'dart:collection';
 
-import 'package:flutter/widgets.dart' hide TypeMatcher;
+import 'package:flutter/widgets.dart';
 import 'package:flutter_provider/flutter_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'assert_tests.dart' as assert_tests;
-
 void main() {
-  assert_tests.main();
-
   group('Test provider', () {
     testWidgets('simple usage', (tester) async {
       var buildCount = 0;
@@ -98,12 +94,12 @@ void main() {
       int old;
       int curr;
       var callCount = 0;
-      final updateShouldNotify = (int o, int c) {
+      bool updateShouldNotify(int o, int c) {
         callCount++;
         old = o;
         curr = c;
         return o != c;
-      };
+      }
 
       var buildCount = 0;
       int buildValue;
@@ -734,7 +730,7 @@ void main() {
             Provider<String>.value('String'),
             Provider<bool>.value(true),
             Provider<Object>.value(true),
-            Provider<List<int>>.value([1, 2, 3]),
+            Provider<List<int>>.value(const [1, 2, 3]),
           ],
           child: Consumer6<int, double, String, bool, Object, List<int>>(
             builder: (context, v1, v2, v3, v4, v5, v6) {
@@ -760,8 +756,8 @@ void main() {
             Provider<String>.value('String'),
             Provider<bool>.value(true),
             Provider<Object>.value(true),
-            Provider<List<int>>.value([1, 2, 3]),
-            Provider<Set<int>>.value({1, 2, 3}),
+            Provider<List<int>>.value(const [1, 2, 3]),
+            Provider<Set<int>>.value(const {1, 2, 3}),
           ],
           child:
               Consumer7<int, double, String, bool, Object, List<int>, Set<int>>(
@@ -789,9 +785,9 @@ void main() {
             Provider<String>.value('String'),
             Provider<bool>.value(true),
             Provider<Object>.value(true),
-            Provider<List<int>>.value([1, 2, 3]),
-            Provider<Set<int>>.value({1, 2, 3}),
-            Provider<Map<int, String>>.value({1: '1', 2: '2', 3: '3'}),
+            Provider<List<int>>.value(const [1, 2, 3]),
+            Provider<Set<int>>.value(const {1, 2, 3}),
+            Provider<Map<int, String>>.value(const {1: '1', 2: '2', 3: '3'}),
           ],
           child: Consumer8<int, double, String, bool, Object, List<int>,
               Set<int>, Map<int, String>>(
@@ -820,27 +816,25 @@ void main() {
             Provider<String>.value('String'),
             Provider<bool>.value(true),
             Provider<Object>.value(true),
-            Provider<List<int>>.value([1, 2, 3]),
-            Provider<Set<int>>.value({1, 2, 3}),
-            Provider<Map<int, String>>.value({1: '1', 2: '2', 3: '3'}),
+            Provider<List<int>>.value(const [1, 2, 3]),
+            Provider<Set<int>>.value(const {1, 2, 3}),
+            Provider<Map<int, String>>.value(const {1: '1', 2: '2', 3: '3'}),
             Provider<Queue<int>>.value(Queue.of([1, 2, 3])),
           ],
-          child: Container(
-            child: Consumer9<int, double, String, bool, Object, List<int>,
-                Set<int>, Map<int, String>, Queue<int>>(
-              builder: (context, v1, v2, v3, v4, v5, v6, v7, v8, v9) {
-                expect(v1, 1);
-                expect(v2, 2);
-                expect(v3, 'String');
-                expect(v4, true);
-                expect(v5, true);
-                expect(v6, [1, 2, 3]);
-                expect(v7, {1, 2, 3});
-                expect(v8, {1: '1', 2: '2', 3: '3'});
-                expect(v9, Queue.of([1, 2, 3]));
-                return Container();
-              },
-            ),
+          child: Consumer9<int, double, String, bool, Object, List<int>,
+              Set<int>, Map<int, String>, Queue<int>>(
+            builder: (context, v1, v2, v3, v4, v5, v6, v7, v8, v9) {
+              expect(v1, 1);
+              expect(v2, 2);
+              expect(v3, 'String');
+              expect(v4, true);
+              expect(v5, true);
+              expect(v6, [1, 2, 3]);
+              expect(v7, {1, 2, 3});
+              expect(v8, {1: '1', 2: '2', 3: '3'});
+              expect(v9, Queue.of([1, 2, 3]));
+              return Container();
+            },
           ),
         ),
       );
