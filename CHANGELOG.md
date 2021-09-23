@@ -1,3 +1,9 @@
+### 2.1.0 - Sep 23, 2021
+
+-   Update `meta` to `1.7.0`.
+-   Change sdk constraint `>=2.14.0 <3.0.0` and flutter constraint `>=2.5.0`.
+-   Migrated from `pedantic` to `flutter_lints`.
+
 ### 2.0.0 - Mar 1, 2021
 
 -   Stable release for null safety.
